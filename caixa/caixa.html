@@ -9,91 +9,87 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- ===================================================== -->
-  <!-- COMPLEMENTO CSS — FINAL, VALIDADO, FUNCIONAL          -->
+  <!-- COMPLEMENTO CSS — FINAL, LIMPO, VALIDADO              -->
   <!-- ===================================================== -->
   <style>
     html, body {
       overflow-x: hidden !important;
       max-width: 100% !important;
+      font-family: "Inter", sans-serif;
     }
 
+    /* ================= MOBILE ================= */
     @media (max-width: 900px) {
 
-      /* Corrige layout principal */
+      /* LAYOUT PRINCIPAL */
       .panel-layout {
         flex-direction: column !important;
         width: 100% !important;
         overflow-x: hidden !important;
       }
 
-      /* MENU FIXO HORIZONTAL — SEM ROLAGEM */
+      /* MENU SUPERIOR FIXO */
       .sidebar-new {
         position: sticky !important;
         top: 60px !important;
         z-index: 30 !important;
 
         width: 100% !important;
-        padding: 6px 4px !important;
-        background: #fff !important;
-        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 8px 6px !important;
+        background: #fff;
+        border-bottom: 1px solid #e2e8f0;
 
-        display: flex !important;
+        display: flex;
+        justify-content: center !important;
         align-items: center !important;
-        justify-content: space-between !important;
       }
 
-      /* Remove avatar e títulos */
+      /* Remover avatar e seções escondidas */
       .sidebar-user,
       .sidebar-section {
         display: none !important;
       }
 
-      /* Container dos botões */
+      /* Container do menu */
       .sidebar-menu {
         width: 100% !important;
-        display: flex !important;
-        flex-direction: row !important;
+        display: flex;
+        flex-direction: row;
         justify-content: space-between !important;
-        align-items: center !important;
-        gap: 4px !important;
+        align-items: center;
+        gap: 6px !important;
       }
 
-      /* BOTÕES COMPACTOS */
-      .menu-item {
-        flex: 1 !important;                 /* divide igualmente */
+      /* Botões do menu */
+      .menu-item,
+      #btnLogout {
+        flex: 1 !important;
         padding: 6px 4px !important;
-        margin: 0 1px !important;
-
         font-size: 0.72rem !important;
-        text-align: center !important;
-        border-radius: 10px !important;
-        white-space: nowrap !important;
 
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-      }
 
-      /* Botão SAIR no final */
-      #btnLogout {
-        flex: 1 !important;
-        padding: 6px 4px !important;
-        margin-left: 4px !important;
-        font-size: 0.72rem !important;
         border-radius: 10px !important;
-        text-align: center !important;
         white-space: nowrap !important;
       }
 
-      /* Conteúdo */
-      .panel-main {
-        margin-top: 12px !important;
-        padding: 14px !important;
-        overflow-x: hidden !important;
-        width: 100% !important;
+      /* Botão sair estilizado */
+      #btnLogout {
+        background: #fef2f2 !important;
+        border: 1px solid #fecaca !important;
+        color: #b91c1c !important;
       }
 
-      /* Evita estouro */
+      /* Conteúdo NÃO ficar escondido */
+      .panel-main {
+        margin-top: 85px !important;
+        padding: 14px !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+      }
+
       .card-new,
       .form-item input,
       .form-item select,
@@ -116,6 +112,7 @@
         <div style="font-size:0.8rem;opacity:.85;">Painel do Caixa</div>
       </div>
     </div>
+
     <div class="topbar-user">
       <span id="headerUserName">Ezequiel</span>
       <img src="../icons/user-default.png" id="headerAvatar" class="topbar-avatar" alt="Avatar">
@@ -125,18 +122,15 @@
   <!-- LAYOUT PRINCIPAL -->
   <div class="panel-layout">
 
-    <!-- MENU HORIZONTAL -->
+    <!-- MENU SUPERIOR HORIZONTAL -->
     <aside class="sidebar-new">
-
       <nav class="sidebar-menu">
         <button class="menu-item active" data-section="novo-contrato">📄 Novo Contrato</button>
         <button class="menu-item" data-section="clientes">👥 Clientes</button>
         <button class="menu-item" data-section="envios">📤 Envios</button>
         <button class="menu-item disabled">🔒 Caixa</button>
+        <button id="btnLogout" class="menu-item logout-btn">Sair</button>
       </nav>
-
-      <button id="btnLogout" class="logout-btn">Sair</button>
-
     </aside>
 
     <!-- CONTEÚDO PRINCIPAL -->
@@ -144,7 +138,9 @@
 
       <div class="panel-header">
         <h2 id="mainTitle">Novo Contrato</h2>
-        <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
+        <p class="panel-desc">
+          Cadastro completo de cliente, contrato, documentos e envio ao motoboy.
+        </p>
       </div>
 
       <!-- NOVO CONTRATO -->
@@ -260,10 +256,11 @@
     </main>
   </div>
 
+  <!-- TOAST -->
   <div class="toast" id="toast">
     <span id="toastMessage">Ação realizada.</span>
   </div>
 
-<script src="../js/caixa.js"></script>
+  <script src="../js/caixa.js"></script>
 </body>
 </html>
