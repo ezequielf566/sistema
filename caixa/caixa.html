@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- ===================================================== -->
-  <!-- COMPLEMENTO CSS — FINAL, LIMPO, VALIDADO              -->
+  <!-- CSS FINAL OTIMIZADO — MENU FIXO, COLADO AO AZUL      -->
   <!-- ===================================================== -->
   <style>
     html, body {
@@ -18,7 +18,7 @@
       font-family: "Inter", sans-serif;
     }
 
-    /* ================= MOBILE ================= */
+    /* ============================ MOBILE ============================ */
     @media (max-width: 900px) {
 
       /* LAYOUT PRINCIPAL */
@@ -28,64 +28,65 @@
         overflow-x: hidden !important;
       }
 
-      /* MENU SUPERIOR FIXO */
+      /* MENU FIXO COLADO AO AZUL */
       .sidebar-new {
         position: sticky !important;
-        top: 60px !important;
-        z-index: 30 !important;
+        top: 60px !important; /* encosta no topo azul */
+        z-index: 200 !important;
 
         width: 100% !important;
-        padding: 8px 6px !important;
-        background: #fff;
+        padding: 8px 10px !important;
+        background: #ffffff;
         border-bottom: 1px solid #e2e8f0;
 
-        display: flex;
+        display: flex !important;
         justify-content: center !important;
         align-items: center !important;
       }
 
-      /* Remover avatar e seções escondidas */
       .sidebar-user,
       .sidebar-section {
         display: none !important;
       }
 
-      /* Container do menu */
+      /* Ícones do menu */
       .sidebar-menu {
         width: 100% !important;
-        display: flex;
-        flex-direction: row;
+        display: flex !important;
         justify-content: space-between !important;
-        align-items: center;
+        align-items: center !important;
         gap: 6px !important;
       }
 
-      /* Botões do menu */
-      .menu-item,
-      #btnLogout {
+      .sidebar-menu .menu-item {
         flex: 1 !important;
-        padding: 6px 4px !important;
-        font-size: 0.72rem !important;
+        height: 36px !important;
+        padding: 0 !important;
 
         display: flex !important;
-        justify-content: center !important;
         align-items: center !important;
+        justify-content: center !important;
 
+        font-size: 0.74rem !important;
         border-radius: 10px !important;
         white-space: nowrap !important;
       }
 
-      /* Botão sair estilizado */
+      /* REMOÇÃO TOTAL DO SAIR */
       #btnLogout {
-        background: #fef2f2 !important;
-        border: 1px solid #fecaca !important;
-        color: #b91c1c !important;
+        display: none !important;
       }
 
-      /* Conteúdo NÃO ficar escondido */
+      /* Aumentar espaçamento abaixo do texto "Novo Contrato" */
+      .panel-header {
+        margin-top: 20px !important;
+        margin-bottom: 40px !important; /* maior espaço */
+      }
+
+      /* Corrige espaço geral do conteúdo */
       .panel-main {
-        margin-top: 85px !important;
-        padding: 14px !important;
+        margin-top: 0 !important; /* não precisa mais compensar */
+        padding: 20px !important;
         width: 100% !important;
         overflow-x: hidden !important;
       }
@@ -122,14 +123,13 @@
   <!-- LAYOUT PRINCIPAL -->
   <div class="panel-layout">
 
-    <!-- MENU SUPERIOR HORIZONTAL -->
+    <!-- MENU FIXO E COLADO AO AZUL -->
     <aside class="sidebar-new">
       <nav class="sidebar-menu">
         <button class="menu-item active" data-section="novo-contrato">📄 Novo Contrato</button>
         <button class="menu-item" data-section="clientes">👥 Clientes</button>
         <button class="menu-item" data-section="envios">📤 Envios</button>
         <button class="menu-item disabled">🔒 Caixa</button>
-        <button id="btnLogout" class="menu-item logout-btn">Sair</button>
       </nav>
     </aside>
 
