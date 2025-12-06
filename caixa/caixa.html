@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- ===================================================== -->
-  <!-- CSS FINAL OTIMIZADO — MENU FIXO, COLADO AO AZUL      -->
+  <!-- CSS FINAL CORRIGIDO — MENU + SAIR + ESPAÇAMENTO       -->
   <!-- ===================================================== -->
   <style>
     html, body {
@@ -21,25 +21,25 @@
     /* ============================ MOBILE ============================ */
     @media (max-width: 900px) {
 
-      /* LAYOUT PRINCIPAL */
+      /* LAYOUT */
       .panel-layout {
         flex-direction: column !important;
         width: 100% !important;
         overflow-x: hidden !important;
       }
 
-      /* MENU FIXO COLADO AO AZUL */
+      /* MENU SUPERIOR */
       .sidebar-new {
         position: sticky !important;
-        top: 60px !important; /* encosta no topo azul */
-        z-index: 200 !important;
+        top: 60px !important;
+        z-index: 30 !important;
 
         width: 100% !important;
-        padding: 8px 10px !important;
-        background: #ffffff;
+        padding: 8px 6px !important;
+        background: #fff;
         border-bottom: 1px solid #e2e8f0;
 
-        display: flex !important;
+        display: flex;
         justify-content: center !important;
         align-items: center !important;
       }
@@ -49,46 +49,50 @@
         display: none !important;
       }
 
-      /* Ícones do menu */
+      /* CONTAINER DOS BOTÕES */
       .sidebar-menu {
         width: 100% !important;
-        display: flex !important;
+        display: flex;
+        flex-direction: row;
         justify-content: space-between !important;
         align-items: center !important;
         gap: 6px !important;
       }
 
-      .sidebar-menu .menu-item {
+      /* BOTÕES DO MENU — altura igual, alinhamento perfeito */
+      .sidebar-menu .menu-item,
+      #btnLogout {
         flex: 1 !important;
         height: 36px !important;
         padding: 0 !important;
 
         display: flex !important;
-        align-items: center !important;
         justify-content: center !important;
+        align-items: center !important;
 
         font-size: 0.74rem !important;
         border-radius: 10px !important;
         white-space: nowrap !important;
       }
 
-      /* REMOÇÃO TOTAL DO SAIR */
+      /* ESTILO DO SAIR */
       #btnLogout {
-        display: none !important;
+        background: #fef2f2 !important;
+        border: 1px solid #fecaca !important;
+        color: #b91c1c !important;
       }
 
-      /* Aumentar espaçamento abaixo do texto "Novo Contrato" */
-      .panel-header {
-        margin-top: 20px !important;
-        margin-bottom: 40px !important; /* maior espaço */
-      }
-
-      /* Corrige espaço geral do conteúdo */
+      /* CORREÇÃO DO TEXTO COLADO */
       .panel-main {
-        margin-top: 0 !important; /* não precisa mais compensar */
-        padding: 20px !important;
+        margin-top: 90px !important;
+        padding: 14px !important;
         width: 100% !important;
         overflow-x: hidden !important;
+      }
+
+      /* Espaço maior abaixo do "Novo Contrato" */
+      .panel-header {
+        margin-bottom: 26px !important;
       }
 
       .card-new,
@@ -123,13 +127,18 @@
   <!-- LAYOUT PRINCIPAL -->
   <div class="panel-layout">
 
-    <!-- MENU FIXO E COLADO AO AZUL -->
+    <!-- MENU SUPERIOR ALINHADO -->
     <aside class="sidebar-new">
       <nav class="sidebar-menu">
+
         <button class="menu-item active" data-section="novo-contrato">📄 Novo Contrato</button>
         <button class="menu-item" data-section="clientes">👥 Clientes</button>
         <button class="menu-item" data-section="envios">📤 Envios</button>
         <button class="menu-item disabled">🔒 Caixa</button>
+
+        <!-- SAIR agora dentro do mesmo flex -->
+        <button id="btnLogout" class="menu-item logout-btn">Sair</button>
+
       </nav>
     </aside>
 
@@ -138,9 +147,7 @@
 
       <div class="panel-header">
         <h2 id="mainTitle">Novo Contrato</h2>
-        <p class="panel-desc">
-          Cadastro completo de cliente, contrato, documentos e envio ao motoboy.
-        </p>
+        <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
       </div>
 
       <!-- NOVO CONTRATO -->
