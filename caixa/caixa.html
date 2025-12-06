@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- ===================================================== -->
-  <!-- CSS FINAL CONSOLIDADO — MENU FIXO + SAIR FIXO         -->
+  <!-- COMPLEMENTO CSS — FINAL, VALIDADO, FUNCIONAL          -->
   <!-- ===================================================== -->
   <style>
     html, body {
@@ -17,92 +17,83 @@
       max-width: 100% !important;
     }
 
-    /* BOTÃO SAIR — sempre visível no topo */
-    .topbar-logout-fixed {
-      position: absolute;
-      right: 12px;
-      top: 12px;
-      z-index: 9999;
-      background: #fff;
-      border: 1px solid #d1d5db;
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-
     @media (max-width: 900px) {
 
-      /* Layout principal */
+      /* Corrige layout principal */
       .panel-layout {
         flex-direction: column !important;
         width: 100% !important;
         overflow-x: hidden !important;
       }
 
-      /* MENU 100% FIXO */
+      /* MENU FIXO HORIZONTAL — SEM ROLAGEM */
       .sidebar-new {
-        position: fixed !important;
-        top: 60px !important; /* abaixo da topbar */
-        left: 0 !important;
-        width: 100% !important;
+        position: sticky !important;
+        top: 60px !important;
+        z-index: 30 !important;
 
+        width: 100% !important;
+        padding: 6px 4px !important;
         background: #fff !important;
         border-bottom: 1px solid #e2e8f0 !important;
 
-        padding: 6px 4px !important;
-
-        z-index: 300 !important;
-
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
+        justify-content: space-between !important;
       }
 
-      /* Remove avatar e seções internas da sidebar */
+      /* Remove avatar e títulos */
       .sidebar-user,
       .sidebar-section {
         display: none !important;
       }
 
-      /* Botões em linha */
+      /* Container dos botões */
       .sidebar-menu {
         width: 100% !important;
         display: flex !important;
+        flex-direction: row !important;
         justify-content: space-between !important;
         align-items: center !important;
         gap: 4px !important;
       }
 
+      /* BOTÕES COMPACTOS */
       .menu-item {
-        flex: 1 !important;
+        flex: 1 !important;                 /* divide igualmente */
         padding: 6px 4px !important;
         margin: 0 1px !important;
 
         font-size: 0.72rem !important;
+        text-align: center !important;
         border-radius: 10px !important;
         white-space: nowrap !important;
-        text-align: center !important;
 
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
       }
 
-      /* Botão sair não aparece dentro do menu */
+      /* Botão SAIR no final */
       #btnLogout {
-        display: none !important;
+        flex: 1 !important;
+        padding: 6px 4px !important;
+        margin-left: 4px !important;
+        font-size: 0.72rem !important;
+        border-radius: 10px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
       }
 
-      /* CONTEÚDO — dá espaço total para menu fixo */
+      /* Conteúdo */
       .panel-main {
-        margin-top: 130px !important; /* espaço fixo para menu + topo */
+        margin-top: 12px !important;
         padding: 14px !important;
         overflow-x: hidden !important;
         width: 100% !important;
       }
 
-      /* Evita quebra lateral */
+      /* Evita estouro */
       .card-new,
       .form-item input,
       .form-item select,
@@ -116,9 +107,7 @@
 
 <body class="panel-body">
 
-  <!-- ======================== -->
-  <!-- TOPBAR + SAIR FIXO      -->
-  <!-- ======================== -->
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-left">
       <img src="../icons/logo.png" class="topbar-logo" alt="Logo">
@@ -127,50 +116,45 @@
         <div style="font-size:0.8rem;opacity:.85;">Painel do Caixa</div>
       </div>
     </div>
-
     <div class="topbar-user">
       <span id="headerUserName">Ezequiel</span>
       <img src="../icons/user-default.png" id="headerAvatar" class="topbar-avatar" alt="Avatar">
     </div>
-
-    <!-- BOTÃO SAIR SEMPRE VISÍVEL -->
-    <button id="btnLogout" class="topbar-logout-fixed">Sair</button>
   </header>
 
-  <!-- ======================== -->
-  <!-- LAYOUT PRINCIPAL         -->
-  <!-- ======================== -->
+  <!-- LAYOUT PRINCIPAL -->
   <div class="panel-layout">
 
-    <!-- MENU FIXO HORIZONTAL -->
+    <!-- MENU HORIZONTAL -->
     <aside class="sidebar-new">
+
       <nav class="sidebar-menu">
         <button class="menu-item active" data-section="novo-contrato">📄 Novo Contrato</button>
         <button class="menu-item" data-section="clientes">👥 Clientes</button>
         <button class="menu-item" data-section="envios">📤 Envios</button>
         <button class="menu-item disabled">🔒 Caixa</button>
       </nav>
+
+      <button id="btnLogout" class="logout-btn">Sair</button>
+
     </aside>
 
-    <!-- ======================== -->
-    <!-- CONTEÚDO PRINCIPAL       -->
-    <!-- ======================== -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="panel-main">
 
       <div class="panel-header">
         <h2 id="mainTitle">Novo Contrato</h2>
-        <p class="panel-desc">
-          Cadastro completo de cliente, contrato, documentos e envio.
-        </p>
+        <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
       </div>
 
-      <!-- SEÇÃO NOVO CONTRATO -->
+      <!-- NOVO CONTRATO -->
       <section class="panel-section active" id="section-novo-contrato">
         <div class="card-new">
           <h3 class="card-title">Dados do Cliente</h3>
 
           <form id="contractForm">
             <div class="form-grid-2">
+
               <div class="form-item">
                 <label>Nome completo</label>
                 <input type="text" id="clienteNome">
