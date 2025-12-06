@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- ===================================================== -->
-  <!-- CSS FINAL CORRIGIDO — MENU + SAIR + ESPAÇAMENTO       -->
+  <!-- COMPLEMENTO CSS — FINAL, LIMPO, VALIDADO              -->
   <!-- ===================================================== -->
   <style>
     html, body {
@@ -18,17 +18,17 @@
       font-family: "Inter", sans-serif;
     }
 
-    /* ============================ MOBILE ============================ */
+    /* ================= MOBILE ================= */
     @media (max-width: 900px) {
 
-      /* LAYOUT */
+      /* LAYOUT PRINCIPAL */
       .panel-layout {
         flex-direction: column !important;
         width: 100% !important;
         overflow-x: hidden !important;
       }
 
-      /* MENU SUPERIOR */
+      /* MENU SUPERIOR FIXO */
       .sidebar-new {
         position: sticky !important;
         top: 60px !important;
@@ -44,55 +44,50 @@
         align-items: center !important;
       }
 
+      /* Remover avatar e seções escondidas */
       .sidebar-user,
       .sidebar-section {
         display: none !important;
       }
 
-      /* CONTAINER DOS BOTÕES */
+      /* Container do menu */
       .sidebar-menu {
         width: 100% !important;
         display: flex;
         flex-direction: row;
         justify-content: space-between !important;
-        align-items: center !important;
+        align-items: center;
         gap: 6px !important;
       }
 
-      /* BOTÕES DO MENU — altura igual, alinhamento perfeito */
-      .sidebar-menu .menu-item,
+      /* Botões do menu */
+      .menu-item,
       #btnLogout {
         flex: 1 !important;
-        height: 36px !important;
-        padding: 0 !important;
+        padding: 6px 4px !important;
+        font-size: 0.72rem !important;
 
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
 
-        font-size: 0.74rem !important;
         border-radius: 10px !important;
         white-space: nowrap !important;
       }
 
-      /* ESTILO DO SAIR */
+      /* Botão sair estilizado */
       #btnLogout {
         background: #fef2f2 !important;
         border: 1px solid #fecaca !important;
         color: #b91c1c !important;
       }
 
-      /* CORREÇÃO DO TEXTO COLADO */
+      /* Conteúdo NÃO ficar escondido */
       .panel-main {
-        margin-top: 90px !important;
+        margin-top: 85px !important;
         padding: 14px !important;
         width: 100% !important;
         overflow-x: hidden !important;
-      }
-
-      /* Espaço maior abaixo do "Novo Contrato" */
-      .panel-header {
-        margin-bottom: 26px !important;
       }
 
       .card-new,
@@ -127,18 +122,14 @@
   <!-- LAYOUT PRINCIPAL -->
   <div class="panel-layout">
 
-    <!-- MENU SUPERIOR ALINHADO -->
+    <!-- MENU SUPERIOR HORIZONTAL -->
     <aside class="sidebar-new">
       <nav class="sidebar-menu">
-
         <button class="menu-item active" data-section="novo-contrato">📄 Novo Contrato</button>
         <button class="menu-item" data-section="clientes">👥 Clientes</button>
         <button class="menu-item" data-section="envios">📤 Envios</button>
         <button class="menu-item disabled">🔒 Caixa</button>
-
-        <!-- SAIR agora dentro do mesmo flex -->
         <button id="btnLogout" class="menu-item logout-btn">Sair</button>
-
       </nav>
     </aside>
 
@@ -147,7 +138,9 @@
 
       <div class="panel-header">
         <h2 id="mainTitle">Novo Contrato</h2>
-        <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
+        <p class="panel-desc">
+          Cadastro completo de cliente, contrato, documentos e envio ao motoboy.
+        </p>
       </div>
 
       <!-- NOVO CONTRATO -->
