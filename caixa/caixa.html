@@ -1,167 +1,254 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel do Caixa</title>
+
   <link rel="stylesheet" href="../css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ============================= -->
+  <!-- COMPLEMENTO CSS (somente aqui) -->
+  <!-- ============================= -->
+  <style>
+    html, body {
+      overflow-x: hidden !important;
+      max-width: 100% !important;
+    }
+
+    /* MOBILE — Corrige menu lateral e impede arrasto */
+    @media (max-width: 900px) {
+
+      .panel-layout {
+        flex-direction: column !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+      }
+
+      /* MENU FIXO + SCROLL HORIZONTAL */
+      .sidebar-new {
+        position: sticky !important;
+        top: 60px !important; /* abaixo da topbar */
+        z-index: 25 !important;
+
+        width: 100% !important;
+        white-space: nowrap !important;
+
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+
+        display: flex !important;
+        gap: 10px !important;
+
+        background: #fff !important;
+        padding: 12px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+      }
+
+      /* Remove avatar e nome para não quebrar o menu */
+      .sidebar-user {
+        display: none !important;
+      }
+
+      /* Mantém só os botões roláveis */
+      .sidebar-menu {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+        width: max-content !important;
+      }
+
+      .sidebar-section {
+        display: none !important;
+      }
+
+      .menu-item {
+        flex: 0 0 auto !important;
+        font-size: .82rem !important;
+        padding: 10px 16px !important;
+        border-radius: 18px !important;
+        white-space: nowrap !important;
+      }
+
+      /* Ajusta área principal */
+      .panel-main {
+        margin-top: 10px !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+        padding: 16px !important;
+      }
+
+      /* Garante que campos não ultrapassem largura */
+      .card-new,
+      .form-item input,
+      .form-item select,
+      .form-grid-2,
+      .form-grid-3 {
+        max-width: 100% !important;
+      }
+    }
+  </style>
 </head>
+
 <body class="panel-body">
 
-  <header class="topbar">
-    <div class="topbar-left">
-      <img src="../icons/logo.png" class="topbar-logo" alt="Logo">
-      <div class="topbar-info">
-        <div class="topbar-title">Sistema Financeiro</div>
-        <div style="font-size:0.8rem;opacity:.85;">Painel do Caixa</div>
-      </div>
+<header class="topbar">
+  <div class="topbar-left">
+    <img src="../icons/logo.png" class="topbar-logo" alt="Logo">
+    <div class="topbar-info">
+      <div class="topbar-title">Sistema Financeiro</div>
+      <div style="font-size:0.8rem;opacity:.85;">Painel do Caixa</div>
     </div>
-    <div class="topbar-user">
-      <span id="headerUserName">Caixa</span>
-      <img src="../icons/user-default.png" id="headerAvatar" class="topbar-avatar" alt="Avatar">
+  </div>
+  <div class="topbar-user">
+    <span id="headerUserName">Caixa</span>
+    <img src="../icons/user-default.png" id="headerAvatar" class="topbar-avatar" alt="Avatar">
+  </div>
+</header>
+
+<div class="panel-layout">
+
+  <aside class="sidebar-new">
+    <nav class="sidebar-menu">
+      <button class="menu-item active" data-section="novo-contrato">
+        <span class="mi-icon">📄</span> Novo Contrato
+      </button>
+
+      <button class="menu-item" data-section="clientes">
+        <span class="mi-icon">👥</span> Clientes
+      </button>
+
+      <button class="menu-item" data-section="envios">
+        <span class="mi-icon">📤</span> Envios ao Motoboy
+      </button>
+
+      <button class="menu-item disabled">
+        <span class="mi-icon">🔒</span> Checagem de Caixa
+      </button>
+    </nav>
+
+    <button id="btnLogout" class="logout-btn">Sair</button>
+  </aside>
+
+  <main class="panel-main">
+
+    <div class="panel-header">
+      <h2 id="mainTitle">Novo Contrato</h2>
+      <p class="panel-desc">
+        Cadastro completo de cliente, contrato, documentos e envio ao motoboy.
+      </p>
     </div>
-  </header>
 
-  <div class="panel-layout">
-    <aside class="sidebar-new">
-      <div class="sidebar-user">
-        <img src="../icons/user-default.png" id="sidebarAvatar" class="sidebar-photo" alt="Avatar">
-        <h3 id="sidebarName">Caixa</h3>
-        <p class="sidebar-role">Usuário autenticado</p>
+    <!-- =============================== -->
+    <!-- SEÇÃO NOVO CONTRATO -->
+    <!-- =============================== -->
+    <section class="panel-section active" id="section-novo-contrato">
+      <div class="card-new">
+        <h3 class="card-title">Dados do Cliente</h3>
+        <form id="contractForm">
+          <div class="form-grid-2">
+            <div class="form-item">
+              <label>Nome completo</label>
+              <input type="text" id="clienteNome" />
+            </div>
+            <div class="form-item">
+              <label>CPF</label>
+              <input type="text" id="clienteCpf" />
+            </div>
+            <div class="form-item">
+              <label>Identidade</label>
+              <input type="text" id="clienteRg" />
+            </div>
+            <div class="form-item">
+              <label>Telefone</label>
+              <input type="text" id="clienteTelefone" />
+            </div>
+            <div class="form-item full">
+              <label>Endereço completo</label>
+              <input type="text" id="clienteEndereco" />
+            </div>
+            <div class="form-item">
+              <label>Cidade</label>
+              <input type="text" id="clienteCidade" />
+            </div>
+            <div class="form-item">
+              <label>Estado</label>
+              <input type="text" id="clienteEstado" maxlength="2" />
+            </div>
+          </div>
+        </form>
       </div>
 
-      <nav class="sidebar-menu">
-        <h4 class="sidebar-section">Operações</h4>
-        <button class="menu-item active" data-section="novo-contrato">
-          <span class="mi-icon">📄</span> Novo Contrato
-        </button>
-        <button class="menu-item" data-section="clientes">
-          <span class="mi-icon">👥</span> Clientes
-        </button>
-        <button class="menu-item" data-section="envios">
-          <span class="mi-icon">📤</span> Envios ao Motoboy
-        </button>
+      <div class="card-new">
+        <h3 class="card-title">Dados do Contrato</h3>
 
-        <h4 class="sidebar-section">Financeiro</h4>
-        <button class="menu-item disabled">
-          <span class="mi-icon">🔒</span> Checagem de Caixa (em breve)
-        </button>
-      </nav>
+        <div class="form-grid-3">
+          <div class="form-item">
+            <label>Valor emprestado (R$)</label>
+            <input type="number" id="valorEmprestimo" />
+          </div>
+          <div class="form-item">
+            <label>Porcentagem (%)</label>
+            <input type="number" id="percentual" />
+          </div>
+          <div class="form-item">
+            <label>Qtd. parcelas</label>
+            <input type="number" id="quantParcelas" />
+          </div>
+        </div>
 
-      <button id="btnLogout" class="logout-btn">Sair</button>
-    </aside>
+        <div class="action-row">
+          <button class="btn-secondary" id="btnGerarParcelas">Gerar parcelas</button>
+          <button class="btn-secondary" id="btnAdicionarParcela">Adicionar manual</button>
+        </div>
 
-    <main class="panel-main">
-      <div class="panel-header">
-        <h2 id="mainTitle">Novo Contrato</h2>
-        <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
+        <div id="parcelListWrapper" class="parcel-box"></div>
       </div>
 
-      <!-- Seção Novo Contrato -->
-      <section class="panel-section active" id="section-novo-contrato">
-        <div class="card-new">
-          <h3 class="card-title">Dados do Cliente</h3>
-          <form id="contractForm">
-            <div class="form-grid-2">
-              <div class="form-item">
-                <label for="clienteNome">Nome completo</label>
-                <input type="text" id="clienteNome" required />
-              </div>
-              <div class="form-item">
-                <label for="clienteCpf">CPF</label>
-                <input type="text" id="clienteCpf" />
-              </div>
-              <div class="form-item">
-                <label for="clienteRg">Identidade</label>
-                <input type="text" id="clienteRg" />
-              </div>
-              <div class="form-item">
-                <label for="clienteTelefone">Telefone (WhatsApp)</label>
-                <input type="text" id="clienteTelefone" />
-              </div>
-              <div class="form-item full">
-                <label for="clienteEndereco">Endereço completo</label>
-                <input type="text" id="clienteEndereco" />
-              </div>
-              <div class="form-item">
-                <label for="clienteCidade">Cidade</label>
-                <input type="text" id="clienteCidade" />
-              </div>
-              <div class="form-item">
-                <label for="clienteEstado">Estado</label>
-                <input type="text" id="clienteEstado" maxlength="2" />
-              </div>
-            </div>
-          </form>
+      <div class="card-new">
+        <h3 class="card-title">Documentos e envio</h3>
+
+        <label class="upload-label">Importar documentos</label>
+        <input type="file" id="docsUpload" multiple class="upload-input" />
+
+        <div id="docsList" class="docs-list"></div>
+
+        <label class="upload-label" style="margin-top:14px;">Enviar para motoboy</label>
+        <select id="motoboySelect" class="select">
+          <option value="">Selecione um motoboy</option>
+        </select>
+
+        <div class="action-row">
+          <button class="btn-secondary full">Visualizar contrato</button>
+          <button class="btn-primary full" id="btnEnviarMotoboy">Enviar contrato</button>
         </div>
+      </div>
+    </section>
 
-        <div class="card-new">
-          <h3 class="card-title">Dados do Contrato</h3>
-          <div class="form-grid-3">
-            <div class="form-item">
-              <label for="valorEmprestimo">Valor emprestado (R$)</label>
-              <input type="number" id="valorEmprestimo" required />
-            </div>
-            <div class="form-item">
-              <label for="percentual">Porcentagem (%)</label>
-              <input type="number" id="percentual" required />
-            </div>
-            <div class="form-item">
-              <label for="quantParcelas">Qtd. de parcelas</label>
-              <input type="number" id="quantParcelas" min="1" max="60" required />
-            </div>
-          </div>
-          <div class="action-row">
-            <button type="button" class="btn-secondary" id="btnGerarParcelas">Gerar parcelas automáticas</button>
-            <button type="button" class="btn-secondary" id="btnAdicionarParcela">Adicionar parcela manual</button>
-          </div>
-          <div id="parcelListWrapper" class="parcel-box"></div>
-        </div>
+    <!-- SEÇÃO CLIENTES -->
+    <section class="panel-section" id="section-clientes">
+      <div class="card-new">
+        <h3 class="card-title">Clientes</h3>
+        <div id="clientesList"></div>
+      </div>
+    </section>
 
-        <div class="card-new">
-          <h3 class="card-title">Documentos e envio ao motoboy</h3>
+    <!-- SEÇÃO ENVIOS -->
+    <section class="panel-section" id="section-envios">
+      <div class="card-new">
+        <h3 class="card-title">Envios</h3>
+        <div id="enviosList"></div>
+      </div>
+    </section>
 
-          <label class="upload-label" for="docsUpload">Importar documentos do cliente</label>
-          <input type="file" id="docsUpload" multiple class="upload-input" />
+  </main>
+</div>
 
-          <div id="docsList" class="docs-list"></div>
+<div class="toast" id="toast">
+  <span id="toastMessage">Ação realizada.</span>
+</div>
 
-          <label class="upload-label" style="margin-top:14px;" for="motoboySelect">Enviar contrato para motoboy</label>
-          <select id="motoboySelect" class="select">
-            <option value="">Selecione um motoboy cadastrado</option>
-          </select>
-
-          <div class="action-row">
-            <button type="button" class="btn-secondary full" id="btnVerContratoGerado">Visualizar último contrato gerado</button>
-            <button type="button" class="btn-primary full" id="btnEnviarMotoboy">Enviar contrato e documentos</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Seção Clientes -->
-      <section class="panel-section" id="section-clientes">
-        <div class="card-new">
-          <h3 class="card-title">Clientes cadastrados</h3>
-          <div id="clientesList"></div>
-        </div>
-      </section>
-
-      <!-- Seção Envios -->
-      <section class="panel-section" id="section-envios">
-        <div class="card-new">
-          <h3 class="card-title">Envios ao motoboy</h3>
-          <div id="enviosList"></div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <div class="toast" id="toast">
-    <span id="toastMessage">Ação realizada.</span>
-  </div>
-
-  <script src="../js/caixa.js"></script>
+<script src="../js/caixa.js"></script>
 </body>
 </html>
