@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- ===================================================== -->
-  <!-- COMPLEMENTO CSS — APENAS PARA ESTA PÁGINA DO PAINEL   -->
+  <!-- COMPLEMENTO CSS — FINAL, VALIDADO, FUNCIONAL          -->
   <!-- ===================================================== -->
   <style>
     html, body {
@@ -19,36 +19,30 @@
 
     @media (max-width: 900px) {
 
-      /* Corrige o layout principal */
+      /* Corrige layout principal */
       .panel-layout {
         flex-direction: column !important;
         width: 100% !important;
         overflow-x: hidden !important;
       }
 
-      /* MENU MOBILE — FIXO + SCROLL HORIZONTAL */
+      /* MENU FIXO HORIZONTAL — SEM ROLAGEM */
       .sidebar-new {
         position: sticky !important;
         top: 60px !important;
-        z-index: 25 !important;
-
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
+        z-index: 30 !important;
 
         width: 100% !important;
-        white-space: nowrap !important;
-
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-
+        padding: 6px 4px !important;
         background: #fff !important;
-        padding: 8px 10px !important;
         border-bottom: 1px solid #e2e8f0 !important;
-        gap: 6px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
       }
 
-      /* Remove avatar e títulos do menu no mobile */
+      /* Remove avatar e títulos */
       .sidebar-user,
       .sidebar-section {
         display: none !important;
@@ -56,40 +50,50 @@
 
       /* Container dos botões */
       .sidebar-menu {
+        width: 100% !important;
         display: flex !important;
         flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        gap: 6px !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 4px !important;
       }
 
-      /* Botões compactos e sem balão gigante */
+      /* BOTÕES COMPACTOS */
       .menu-item {
-        flex: 0 0 auto !important;
-        padding: 6px 12px !important;
-        font-size: 0.78rem !important;
-        border-radius: 14px !important;
+        flex: 1 !important;                 /* divide igualmente */
+        padding: 6px 4px !important;
+        margin: 0 1px !important;
+
+        font-size: 0.72rem !important;
+        text-align: center !important;
+        border-radius: 10px !important;
         white-space: nowrap !important;
+
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
       }
 
-      /* Botão SAIR aparece no final */
+      /* Botão SAIR no final */
       #btnLogout {
-        flex: 0 0 auto !important;
-        padding: 6px 12px !important;
-        font-size: 0.78rem !important;
-        border-radius: 14px !important;
+        flex: 1 !important;
+        padding: 6px 4px !important;
+        margin-left: 4px !important;
+        font-size: 0.72rem !important;
+        border-radius: 10px !important;
+        text-align: center !important;
         white-space: nowrap !important;
-        margin-left: 10px !important;
       }
 
-      /* Conteúdo do painel */
+      /* Conteúdo */
       .panel-main {
-        margin-top: 10px !important;
-        width: 100% !important;
-        overflow-x: hidden !important;
+        margin-top: 12px !important;
         padding: 14px !important;
+        overflow-x: hidden !important;
+        width: 100% !important;
       }
 
-      /* Impede estouro lateral dos cards e inputs */
+      /* Evita estouro */
       .card-new,
       .form-item input,
       .form-item select,
@@ -121,28 +125,16 @@
   <!-- LAYOUT PRINCIPAL -->
   <div class="panel-layout">
 
-    <!-- MENU LATERAL (vira horizontal no mobile) -->
+    <!-- MENU HORIZONTAL -->
     <aside class="sidebar-new">
 
       <nav class="sidebar-menu">
-        <button class="menu-item active" data-section="novo-contrato">
-          📄 Novo Contrato
-        </button>
-
-        <button class="menu-item" data-section="clientes">
-          👥 Clientes
-        </button>
-
-        <button class="menu-item" data-section="envios">
-          📤 Envios ao Motoboy
-        </button>
-
-        <button class="menu-item disabled">
-          🔒 Checagem de Caixa
-        </button>
+        <button class="menu-item active" data-section="novo-contrato">📄 Novo Contrato</button>
+        <button class="menu-item" data-section="clientes">👥 Clientes</button>
+        <button class="menu-item" data-section="envios">📤 Envios</button>
+        <button class="menu-item disabled">🔒 Caixa</button>
       </nav>
 
-      <!-- Botão SAIR no final da rolagem -->
       <button id="btnLogout" class="logout-btn">Sair</button>
 
     </aside>
@@ -152,14 +144,10 @@
 
       <div class="panel-header">
         <h2 id="mainTitle">Novo Contrato</h2>
-        <p class="panel-desc">
-          Cadastro completo de cliente, contrato, documentos e envio ao motoboy.
-        </p>
+        <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
       </div>
 
-      <!-- ============================ -->
-      <!-- SEÇÃO — NOVO CONTRATO -->
-      <!-- ============================ -->
+      <!-- NOVO CONTRATO -->
       <section class="panel-section active" id="section-novo-contrato">
         <div class="card-new">
           <h3 class="card-title">Dados do Cliente</h3>
@@ -239,7 +227,6 @@
 
           <label class="upload-label">Importar documentos</label>
           <input type="file" id="docsUpload" multiple class="upload-input">
-
           <div id="docsList" class="docs-list"></div>
 
           <label class="upload-label" style="margin-top:14px;">Enviar para motoboy</label>
@@ -254,9 +241,7 @@
         </div>
       </section>
 
-      <!-- ============================ -->
-      <!-- SEÇÃO — CLIENTES -->
-      <!-- ============================ -->
+      <!-- CLIENTES -->
       <section class="panel-section" id="section-clientes">
         <div class="card-new">
           <h3 class="card-title">Clientes cadastrados</h3>
@@ -264,9 +249,7 @@
         </div>
       </section>
 
-      <!-- ============================ -->
-      <!-- SEÇÃO — ENVIOS -->
-      <!-- ============================ -->
+      <!-- ENVIOS -->
       <section class="panel-section" id="section-envios">
         <div class="card-new">
           <h3 class="card-title">Envios ao Motoboy</h3>
