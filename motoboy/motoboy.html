@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Motoboy</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="panel-body">
+
+<header class="topbar">
+  <div class="topbar-left">
+    <img src="../icons/logo.png" class="topbar-logo" alt="Logo">
+    <div class="topbar-info">
+      <div class="topbar-title">Sistema Financeiro</div>
+      <div style="font-size:0.8rem;opacity:.85;">Painel do Motoboy</div>
+    </div>
+  </div>
+  <div class="topbar-user">
+    <span id="headerUserName">do Motoboy</span>
+    <img src="../icons/user-default.png" id="headerAvatar" class="topbar-avatar" alt="Avatar">
+  </div>
+</header>
+
+<div class="panel-layout">
+  <aside class="sidebar-new">
+    <div class="sidebar-user">
+      <img src="../icons/user-default.png" id="sidebarAvatar" class="sidebar-photo" alt="Avatar">
+      <h3 id="sidebarName">do Motoboy</h3>
+      <p class="sidebar-role">Usuário autenticado</p>
+    </div>
+
+    <nav class="sidebar-menu">
+      <h4 class="sidebar-section">Menu</h4>
+      <button class="menu-item active">
+        <span class="mi-icon">📊</span> Área principal
+      </button>
+    </nav>
+
+    <button id="btnLogout" class="logout-btn">Sair</button>
+  </aside>
+
+  <main class="panel-main">
+    <div class="panel-header">
+      <h2>Bem-vindo(a), do Motoboy</h2>
+      <p class="panel-desc">Esta área está em construção. Em breve, funções completas para este perfil.</p>
+    </div>
+
+    <section class="panel-section active">
+      <div class="card-new">
+        <p>Use este painel como base para implementar as funções específicas de <strong>do Motoboy</strong>.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    localStorage.removeItem('financeApp_currentUser');
+    window.location.href = '../index.html';
+  });
+</script>
+
+</body>
+</html>

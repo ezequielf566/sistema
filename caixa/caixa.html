@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Caixa</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="panel-body">
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="../icons/logo.png" class="topbar-logo" alt="Logo">
+      <div class="topbar-info">
+        <div class="topbar-title">Sistema Financeiro</div>
+        <div style="font-size:0.8rem;opacity:.85;">Painel do Caixa</div>
+      </div>
+    </div>
+    <div class="topbar-user">
+      <span id="headerUserName">Caixa</span>
+      <img src="../icons/user-default.png" id="headerAvatar" class="topbar-avatar" alt="Avatar">
+    </div>
+  </header>
+
+  <div class="panel-layout">
+    <aside class="sidebar-new">
+      <div class="sidebar-user">
+        <img src="../icons/user-default.png" id="sidebarAvatar" class="sidebar-photo" alt="Avatar">
+        <h3 id="sidebarName">Caixa</h3>
+        <p class="sidebar-role">Usuário autenticado</p>
+      </div>
+
+      <nav class="sidebar-menu">
+        <h4 class="sidebar-section">Operações</h4>
+        <button class="menu-item active" data-section="novo-contrato">
+          <span class="mi-icon">📄</span> Novo Contrato
+        </button>
+        <button class="menu-item" data-section="clientes">
+          <span class="mi-icon">👥</span> Clientes
+        </button>
+        <button class="menu-item" data-section="envios">
+          <span class="mi-icon">📤</span> Envios ao Motoboy
+        </button>
+
+        <h4 class="sidebar-section">Financeiro</h4>
+        <button class="menu-item disabled">
+          <span class="mi-icon">🔒</span> Checagem de Caixa (em breve)
+        </button>
+      </nav>
+
+      <button id="btnLogout" class="logout-btn">Sair</button>
+    </aside>
+
+    <main class="panel-main">
+      <div class="panel-header">
+        <h2 id="mainTitle">Novo Contrato</h2>
+        <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
+      </div>
+
+      <!-- Seção Novo Contrato -->
+      <section class="panel-section active" id="section-novo-contrato">
+        <div class="card-new">
+          <h3 class="card-title">Dados do Cliente</h3>
+          <form id="contractForm">
+            <div class="form-grid-2">
+              <div class="form-item">
+                <label for="clienteNome">Nome completo</label>
+                <input type="text" id="clienteNome" required />
+              </div>
+              <div class="form-item">
+                <label for="clienteCpf">CPF</label>
+                <input type="text" id="clienteCpf" />
+              </div>
+              <div class="form-item">
+                <label for="clienteRg">Identidade</label>
+                <input type="text" id="clienteRg" />
+              </div>
+              <div class="form-item">
+                <label for="clienteTelefone">Telefone (WhatsApp)</label>
+                <input type="text" id="clienteTelefone" />
+              </div>
+              <div class="form-item full">
+                <label for="clienteEndereco">Endereço completo</label>
+                <input type="text" id="clienteEndereco" />
+              </div>
+              <div class="form-item">
+                <label for="clienteCidade">Cidade</label>
+                <input type="text" id="clienteCidade" />
+              </div>
+              <div class="form-item">
+                <label for="clienteEstado">Estado</label>
+                <input type="text" id="clienteEstado" maxlength="2" />
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-new">
+          <h3 class="card-title">Dados do Contrato</h3>
+          <div class="form-grid-3">
+            <div class="form-item">
+              <label for="valorEmprestimo">Valor emprestado (R$)</label>
+              <input type="number" id="valorEmprestimo" required />
+            </div>
+            <div class="form-item">
+              <label for="percentual">Porcentagem (%)</label>
+              <input type="number" id="percentual" required />
+            </div>
+            <div class="form-item">
+              <label for="quantParcelas">Qtd. de parcelas</label>
+              <input type="number" id="quantParcelas" min="1" max="60" required />
+            </div>
+          </div>
+          <div class="action-row">
+            <button type="button" class="btn-secondary" id="btnGerarParcelas">Gerar parcelas automáticas</button>
+            <button type="button" class="btn-secondary" id="btnAdicionarParcela">Adicionar parcela manual</button>
+          </div>
+          <div id="parcelListWrapper" class="parcel-box"></div>
+        </div>
+
+        <div class="card-new">
+          <h3 class="card-title">Documentos e envio ao motoboy</h3>
+
+          <label class="upload-label" for="docsUpload">Importar documentos do cliente</label>
+          <input type="file" id="docsUpload" multiple class="upload-input" />
+
+          <div id="docsList" class="docs-list"></div>
+
+          <label class="upload-label" style="margin-top:14px;" for="motoboySelect">Enviar contrato para motoboy</label>
+          <select id="motoboySelect" class="select">
+            <option value="">Selecione um motoboy cadastrado</option>
+          </select>
+
+          <div class="action-row">
+            <button type="button" class="btn-secondary full" id="btnVerContratoGerado">Visualizar último contrato gerado</button>
+            <button type="button" class="btn-primary full" id="btnEnviarMotoboy">Enviar contrato e documentos</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção Clientes -->
+      <section class="panel-section" id="section-clientes">
+        <div class="card-new">
+          <h3 class="card-title">Clientes cadastrados</h3>
+          <div id="clientesList"></div>
+        </div>
+      </section>
+
+      <!-- Seção Envios -->
+      <section class="panel-section" id="section-envios">
+        <div class="card-new">
+          <h3 class="card-title">Envios ao motoboy</h3>
+          <div id="enviosList"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">
+    <span id="toastMessage">Ação realizada.</span>
+  </div>
+
+  <script src="../js/caixa.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Sistema Financeiro</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-body">
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="icons/logo.png" class="login-logo" alt="Logo" />
+        <h1 class="login-title">Acessar o Sistema</h1>
+        <p class="login-subtitle">Entre com seu Gmail e senha para continuar.</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div>
+          <label class="form-label" for="email">Usuário (Gmail)</label>
+          <div class="input-box">
+            <span class="input-icon">@</span>
+            <input type="email" id="email" placeholder="email@gmail.com" required />
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label" for="password">Senha</label>
+          <div class="input-box">
+            <span class="input-icon eye" id="togglePassword">👁</span>
+            <input type="password" id="password" placeholder="Digite sua senha" required />
+          </div>
+        </div>
+
+        <label class="remember-line">
+          <input type="checkbox" id="rememberMe" />
+          Salvar acesso neste dispositivo
+        </label>
+
+        <button type="submit" class="btn-primary full">Entrar no Sistema</button>
+      </form>
+
+      <div class="login-links">
+        <button class="link" id="btnCreateUser">Criar novo usuário</button>
+        <button class="link" id="btnForgotPassword">Esqueceu sua senha?</button>
+        <button class="link" id="btnChangePassword">Alterar senha (WhatsApp do chefe)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal criar usuário -->
+  <div class="modal-backdrop" id="modalCreateUser">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Novo usuário</h2>
+        <button class="modal-close" data-close="modalCreateUser">✕</button>
+      </div>
+      <p class="modal-info">
+        Preencha os dados do novo usuário. O <strong>token de autorização (91710983)</strong> é obrigatório
+        e deve ser usado apenas por pessoas autorizadas. Em caso de dúvida, contate o chefe pelo número
+        <strong>(99) 99999-9999</strong>.
+      </p>
+      <form id="createUserForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="newName">Nome completo</label>
+            <input type="text" id="newName" required />
+          </div>
+          <div class="form-group">
+            <label for="newCpf">CPF</label>
+            <input type="text" id="newCpf" />
+          </div>
+          <div class="form-group full-width">
+            <label for="newEmail">Gmail (será o usuário de acesso)</label>
+            <input type="email" id="newEmail" required />
+          </div>
+          <div class="form-group">
+            <label for="newPassword">Senha</label>
+            <input type="password" id="newPassword" required />
+          </div>
+          <div class="form-group">
+            <label for="newPasswordConfirm">Repetir senha</label>
+            <input type="password" id="newPasswordConfirm" required />
+          </div>
+          <div class="form-group">
+            <label for="newRole">Cargo</label>
+            <select id="newRole" required>
+              <option value="">Selecione...</option>
+              <option value="caixa">Caixa</option>
+              <option value="motoboy">Motoboy</option>
+              <option value="gerencia">Gerência</option>
+              <option value="chefe">Chefe / Líder</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="newToken">Token de autorização</label>
+            <input type="password" id="newToken" required />
+            <span class="help-text">Informe o token de segurança fornecido pela liderança.</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" data-close="modalCreateUser">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar usuário</button>
+        </div>
+        <p id="createUserMessage" class="feedback-message"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal esqueceu senha -->
+  <div class="modal-backdrop" id="modalForgotPassword">
+    <div class="modal-card small">
+      <div class="modal-header">
+        <h2>Esqueceu a senha?</h2>
+        <button class="modal-close" data-close="modalForgotPassword">✕</button>
+      </div>
+      <p class="modal-info">
+        Para redefinir sua senha, entre em contato com a gerência ou o chefe responsável.
+        O sistema não faz recuperação automática.
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" data-close="modalForgotPassword">Entendi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal alterar senha (WhatsApp) -->
+  <div class="modal-backdrop" id="modalChangePassword">
+    <div class="modal-card small">
+      <div class="modal-header">
+        <h2>Alterar senha</h2>
+        <button class="modal-close" data-close="modalChangePassword">✕</button>
+      </div>
+      <p class="modal-info">
+        Para alterar sua senha, fale diretamente com o chefe da organização pelo WhatsApp
+        <strong>(99) 99999-9999</strong>. Apenas ele pode autorizar ajustes de acesso.
+      </p>
+      <div class="modal-actions">
+        <a href="https://wa.me/5599999999999" target="_blank" class="btn-primary full" style="text-align:center;text-decoration:none;">Abrir WhatsApp do chefe</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <span id="toastMessage">Mensagem</span>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
