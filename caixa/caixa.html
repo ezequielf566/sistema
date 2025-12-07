@@ -13,10 +13,10 @@
       overflow-x: hidden;
       max-width: 100%;
       font-family: "Inter", sans-serif;
-      background: #f5f7fb;
+      background: #f5f7fb; /* fundo real */
     }
 
-    /* ======================= TOPBAR ======================= */
+    /* ======================= BOTÃO SAIR ======================= */
 
     #btnLogoutHeader {
       background: #fef2f2;
@@ -34,13 +34,13 @@
       background: #ffe1e1;
     }
 
-    /* ======================= PRENCHIMENTO DA BRECHA ======================= */
+    /* ======================= FILLER – TAMPA TOTAL ======================= */
     .menu-filler {
       width: 100%;
-      height: 16px;
-      background: #f5f7fb; /* mesma cor real do fundo */
+      height: 26px; /* tampa completamente */
+      background: #f5f7fb;
       position: sticky;
-      top: 56px;
+      top: 56px; /* encosta no fim do azul */
       z-index: 998;
     }
 
@@ -48,7 +48,7 @@
 
     .sidebar-new {
       position: sticky;
-      top: 72px !important;
+      top: 82px !important; /* alinhado com filler */
       z-index: 999 !important;
       width: 100%;
       padding: 8px 8px;
@@ -77,11 +77,11 @@
       white-space: nowrap;
     }
 
-    /* ======================= DISTÂNCIA DO CONTEÚDO ======================= */
+    /* ======================= CONTEÚDO ======================= */
 
     .panel-main {
       padding: 14px;
-      margin-top: 110px !important;
+      margin-top: 85px !important; /* distância exata da 3ª imagem */
       position: relative;
       z-index: 1;
     }
@@ -90,9 +90,14 @@
       margin-bottom: 26px;
     }
 
+    .panel-header p {
+      margin-top: 6px !important; /* subtítulo não cola no título */
+      margin-bottom: 18px !important;
+    }
+
     @media (max-width: 900px) {
       .panel-main {
-        margin-top: 120px !important;
+        margin-top: 95px !important;
       }
     }
   </style>
@@ -110,13 +115,13 @@
       </div>
     </div>
 
-    <!-- BOTÃO SAIR COM CAIXA ORIGINAL -->
+    <!-- BOTÃO SAIR -->
     <div class="topbar-user">
       <button id="btnLogoutHeader">Sair</button>
     </div>
   </header>
 
-  <!-- FILLER QUE TAMPA A BRECHA -->
+  <!-- FILLER (tampa total) -->
   <div class="menu-filler"></div>
 
   <!-- MENU SUPERIOR FIXO -->
@@ -256,7 +261,7 @@
 
   <script src="../js/caixa.js"></script>
 
-  <!-- BOTÃO SAIR FUNCIONANDO PARA A RAIZ -->
+  <!-- BOTÃO SAIR -->
   <script>
     document.getElementById("btnLogoutHeader").addEventListener("click", () => {
       window.location.href = "/index.html";
