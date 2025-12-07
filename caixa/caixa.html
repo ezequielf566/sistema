@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device=device-width, initial-scale=1.0">
   <title>Painel do Caixa</title>
 
   <link rel="stylesheet" href="../css/style.css">
@@ -16,7 +16,7 @@
       background: #f5f7fb;
     }
 
-    /* ======================= BOTÃO SAIR ======================= */
+    /* ======================= BOTÃO SAIR TOPBAR ======================= */
 
     #btnLogoutHeader {
       background: #fef2f2;
@@ -34,7 +34,7 @@
       background: #ffe1e1;
     }
 
-    /* ======================= FILLER – TAMPA TOTAL ======================= */
+    /* ======================= TAMPA DO MENU ======================= */
 
     .menu-filler {
       width: 100%;
@@ -45,7 +45,7 @@
       z-index: 998;
     }
 
-    /* ======================= MENU FIXO ======================= */
+    /* ======================= MENU FIXO SUPERIOR ======================= */
 
     .sidebar-new {
       position: sticky;
@@ -78,11 +78,11 @@
       white-space: nowrap;
     }
 
-    /* ======================= CONTEÚDO – TITULAÇÃO AJUSTADA ======================= */
+    /* ======================= CONTEÚDO ======================= */
 
     .panel-main {
       padding: 14px;
-      margin-top: 36px !important; /* Distância EXACTA da sua referência */
+      margin-top: 36px !important;
       position: relative;
       z-index: 1;
     }
@@ -116,13 +116,12 @@
       </div>
     </div>
 
-    <!-- BOTÃO SAIR -->
     <div class="topbar-user">
       <button id="btnLogoutHeader">Sair</button>
     </div>
   </header>
 
-  <!-- FILLER (tampa branca que evita vazamento do scroll) -->
+  <!-- FILLER DO MENU -->
   <div class="menu-filler"></div>
 
   <!-- MENU SUPERIOR FIXO -->
@@ -135,18 +134,18 @@
     </nav>
   </aside>
 
-  <!-- CONTEÚDO -->
+  <!-- CONTEÚDO PRINCIPAL -->
   <main class="panel-main">
 
     <div class="panel-header">
       <h2 id="mainTitle">Novo Contrato</h2>
-      <p class="panel-desc">
-        Cadastro completo de cliente, contrato, documentos e envio ao motoboy.
-      </p>
+      <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
     </div>
 
-    <!-- NOVO CONTRATO -->
+    <!-- ====================== NOVO CONTRATO ====================== -->
     <section class="panel-section active" id="section-novo-contrato">
+
+      <!-- DADOS DO CLIENTE -->
       <div class="card-new">
         <h3 class="card-title">Dados do Cliente</h3>
 
@@ -185,17 +184,19 @@
 
             <div class="form-item">
               <label>Estado</label>
-              <input type="text" maxlength="2" id="clienteEstado">
+              <input type="text" id="clienteEstado" maxlength="2">
             </div>
 
           </div>
         </form>
       </div>
 
+      <!-- DADOS DO CONTRATO -->
       <div class="card-new">
         <h3 class="card-title">Dados do Contrato</h3>
 
         <div class="form-grid-3">
+
           <div class="form-item">
             <label>Valor emprestado (R$)</label>
             <input type="number" id="valorEmprestimo">
@@ -210,8 +211,26 @@
             <label>Qtd. parcelas</label>
             <input type="number" id="quantParcelas">
           </div>
+
         </div>
 
+        <!-- NOVOS CAMPOS DE JUROS -->
+        <div class="form-item full">
+          <label>Tipo de juros</label>
+          <select id="tipoJuros" class="select">
+            <option value="total">Percentual sobre o valor total</option>
+            <option value="mensal">Percentual mensal (por parcela)</option>
+            <option value="diario">Percentual por dias</option>
+          </select>
+        </div>
+
+        <div class="form-item full">
+          <label>Dias do contrato (para juros diário)</label>
+          <input type="number" id="diasJuros" placeholder="Ex: 14, 20, 33...">
+          <small style="font-size:0.78rem;color:#6b7280;">Usado apenas no modo "Percentual por dias".</small>
+        </div>
+
+        <!-- GERAR PARCELAS -->
         <div class="action-row">
           <button class="btn-secondary" id="btnGerarParcelas">Gerar parcelas</button>
           <button class="btn-secondary" id="btnAdicionarParcela">Adicionar manual</button>
@@ -220,6 +239,7 @@
         <div id="parcelListWrapper" class="parcel-box"></div>
       </div>
 
+      <!-- DOCUMENTOS E ENVIO -->
       <div class="card-new">
         <h3 class="card-title">Documentos e envio</h3>
 
@@ -239,7 +259,7 @@
       </div>
     </section>
 
-    <!-- CLIENTES -->
+    <!-- ====================== CLIENTES ====================== -->
     <section class="panel-section" id="section-clientes">
       <div class="card-new">
         <h3 class="card-title">Clientes cadastrados</h3>
@@ -247,7 +267,7 @@
       </div>
     </section>
 
-    <!-- ENVIOS -->
+    <!-- ====================== ENVIOS ====================== -->
     <section class="panel-section" id="section-envios">
       <div class="card-new">
         <h3 class="card-title">Envios ao Motoboy</h3>
@@ -260,11 +280,13 @@
   <!-- TOAST -->
   <div class="toast" id="toast"><span id="toastMessage">Ação realizada.</span></div>
 
+  <!-- JS -->
   <script src="../js/caixa.js"></script>
 
-  <!-- BOTÃO SAIR -->
+  <!-- LOGOUT -->
   <script>
     document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+      localStorage.removeItem("financeApp_currentUser");
       window.location.href = "/index.html";
     });
   </script>
