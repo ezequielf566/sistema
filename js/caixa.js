@@ -1,3 +1,7 @@
+/* =========================================================
+   SISTEMA FINANCEIRO - PAINEL DO CAIXA
+   Versão COMPLETA Atualizada
+   ========================================================= */
 
 const STORAGE_CURRENT_USER = "financeApp_currentUser";
 const STORAGE_CLIENTES = "financeApp_clientes";
@@ -6,26 +10,46 @@ const STORAGE_LAST_CONTRACT_ID = "financeApp_lastContractId";
 const STORAGE_ENVIOS = "financeApp_envios";
 const STORAGE_USERS_KEY = "financeApp_users";
 
+/* =========================================================
+   TOAST
+   ========================================================= */
 function showToast(message) {
   const toast = document.getElementById("toast");
   const msg = document.getElementById("toastMessage");
   if (!toast || !msg) return;
   msg.textContent = message;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2600);
+  setTimeout(() => toast.classList.remove("show"), 2200);
 }
 
+/* =========================================================
+   USUÁRIO LOGADO
+   ========================================================= */
 function getCurrentUser() {
   try {
     const raw = localStorage.getItem(STORAGE_CURRENT_USER);
     if (!raw) return null;
     return JSON.parse(raw);
-  } catch (e) {
-    console.error(e);
+  } catch {
     return null;
   }
 }
 
+function renderUserInfo() {
+  const user = getCurrentUser();
+  if (!user) return;
+
+  const name = user.name || "Usuário";
+  const headerUser = document.getElementById("headerUserName");
+  const sidebarName = document.getElementById("sidebarName");
+  
+  if (headerUser) headerUser.textContent = name;
+  if (sidebarName) sidebarName.textContent = name;
+}
+
+/* =========================================================
+   STORAGE HELPER FUNCTIONS
+   ========================================================= */
 function loadFromStorage(key) {
   try {
     const raw = localStorage.getItem(key);
@@ -40,96 +64,175 @@ function saveToStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
 
-function renderUserInfo() {
-  const user = getCurrentUser();
-  if (!user) return;
-  const name = user.name || "Caixa";
-  const headerUser = document.getElementById("headerUserName");
-  const sidebarName = document.getElementById("sidebarName");
-  if (headerUser) headerUser.textContent = name;
-  if (sidebarName) sidebarName.textContent = name;
-}
-
+/* =========================================================
+   NAVEGAÇÃO ENTRE SEÇÕES
+   ========================================================= */
 function setupNavigation() {
-  const items = document.querySelectorAll(".menu-item");
+  const buttons = document.querySelectorAll(".menu-item[data-section]");
   const sections = document.querySelectorAll(".panel-section");
-  items.forEach(btn => {
-    const sectionId = btn.getAttribute("data-section");
-    if (!sectionId) return;
+
+  buttons.forEach(btn => {
     btn.addEventListener("click", () => {
-      if (btn.classList.contains("disabled")) return;
-      items.forEach(i => i.classList.remove("active"));
+      const target = btn.getAttribute("data-section");
+
+      buttons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
+
       sections.forEach(sec => {
-        if (sec.id === "section-" + sectionId) {
+        sec.classList.remove("active");
+        if (sec.id === "section-" + target) {
           sec.classList.add("active");
-        } else {
-          sec.classList.remove("active");
         }
       });
+
       const titleMap = {
         "novo-contrato": "Novo Contrato",
         "clientes": "Clientes",
         "envios": "Envios ao Motoboy"
       };
       const descMap = {
-        "novo-contrato": "Cadastro completo de cliente, contrato, documentos e envio.",
-        "clientes": "Lista de clientes cadastrados neste dispositivo.",
-        "envios": "Histórico de envios de contratos para motoboys."
+        "novo-contrato": "Cadastro completo de cliente e contrato.",
+        "clientes": "Lista de clientes cadastrados.",
+        "envios": "Histórico de envios ao motoboy."
       };
-      const mainTitle = document.getElementById("mainTitle");
-      const panelDesc = document.querySelector(".panel-desc");
-      if (mainTitle && titleMap[sectionId]) mainTitle.textContent = titleMap[sectionId];
-      if (panelDesc && descMap[sectionId]) panelDesc.textContent = descMap[sectionId];
+
+      document.getElementById("mainTitle").textContent = titleMap[target];
+      document.querySelector(".panel-desc").textContent = descMap[target];
     });
   });
 }
 
+/* =========================================================
+   PARCELAS - ADD LINE
+   ========================================================= */
 function addParcelRow(container, data = {}) {
-  const row = document.createElement("div");
-  row.className = "parcel-row";
-  row.innerHTML = `
+  const div = document.createElement("div");
+  div.className = "parcel-row";
+
+  div.innerHTML = `
     <input type="date" class="parcela-data" value="${data.data || ""}">
-    <input type="number" step="0.01" class="parcela-valor" placeholder="Valor" value="${data.valor || ""}">
-    <button type="button" class="btn-small-danger">Remover</button>
+    <input type="number" class="parcela-valor" step="0.01" value="${data.valor || ""}">
+    <button type="button" class="btn-small-danger">X</button>
   `;
-  row.querySelector("button").addEventListener("click", () => row.remove());
-  container.appendChild(row);
+
+  div.querySelector("button").addEventListener("click", () => div.remove());
+
+  container.appendChild(div);
 }
 
+/* =========================================================
+   PARCELAS - GERAR AUTOMÁTICAS COM DATAS DIÁRIAS
+   ========================================================= */
 function gerarParcelasAutomaticas() {
   const valor = parseFloat(document.getElementById("valorEmprestimo").value || "0");
-  const qtd = parseInt(document.getElementById("quantParcelas").value || "0", 10);
+  const qtd = parseInt(document.getElementById("quantParcelas").value || "0");
+  const percentual = parseFloat(document.getElementById("percentual").value || "0");
+  const tipoJuros = document.getElementById("tipoJuros")?.value || "total";
+  const diasJuros = parseInt(document.getElementById("diasJuros")?.value || "0");
+
   const wrapper = document.getElementById("parcelListWrapper");
-  if (!wrapper) return;
   wrapper.innerHTML = "";
-  if (!valor || !qtd || qtd <= 0) {
-    showToast("Informe valor e quantidade de parcelas.");
+
+  if (!valor || !qtd) {
+    showToast("Preencha valor e quantidade de parcelas.");
     return;
   }
-  const valorParcela = (valor / qtd);
-  for (let i = 0; i < qtd; i++) {
-    addParcelRow(wrapper, { valor: valorParcela.toFixed(2) });
+
+  let valorParcela = 0;
+
+  /* === JUROS TOTAL ==================================== */
+  if (tipoJuros === "total") {
+    const totalComJuros = valor + (valor * (percentual / 100));
+    valorParcela = totalComJuros / qtd;
   }
+
+  /* === JUROS MENSAL =================================== */
+  else if (tipoJuros === "mensal") {
+    const base = valor / qtd;
+    valorParcela = base + (base * (percentual / 100));
+  }
+
+  /* === JUROS POR DIAS (percentual direto) ============= */
+  else if (tipoJuros === "diario") {
+    if (!diasJuros || diasJuros <= 0) {
+      showToast("Informe os dias para juros diário.");
+      return;
+    }
+    const totalComJuros = valor + (valor * (percentual / 100));
+    valorParcela = totalComJuros / qtd;
+  }
+
+  /* === GERAR PARCELAS COM DATAS DIÁRIAS =============== */
+  const hoje = new Date();
+  
+  for (let i = 0; i < qtd; i++) {
+    const d = new Date(hoje);
+    d.setDate(d.getDate() + i);
+
+    addParcelRow(wrapper, {
+      data: d.toISOString().slice(0, 10),
+      valor: valorParcela.toFixed(2)
+    });
+  }
+
+  showToast("Parcelas geradas.");
 }
 
+/* =========================================================
+   COLETAR PARCELAS
+   ========================================================= */
 function collectParcelas() {
   const wrapper = document.getElementById("parcelListWrapper");
-  if (!wrapper) return [];
-  const rows = wrapper.querySelectorAll(".parcel-row");
-  const list = [];
-  rows.forEach(row => {
-    const dataInput = row.querySelector(".parcela-data");
-    const valorInput = row.querySelector(".parcela-valor");
-    const data = dataInput ? dataInput.value : "";
-    const valor = valorInput ? parseFloat(valorInput.value || "0") : 0;
-    if (data && valor) {
-      list.push({ data, valor });
-    }
+  const linhas = wrapper.querySelectorAll(".parcel-row");
+  const lista = [];
+
+  linhas.forEach(linha => {
+    const data = linha.querySelector(".parcela-data").value;
+    const valor = parseFloat(linha.querySelector(".parcela-valor").value || "0");
+    if (data && valor) lista.push({ data, valor });
   });
-  return list;
+
+  return lista;
 }
 
+/* =========================================================
+   DOCUMENTOS
+   ========================================================= */
+let docsTemp = [];
+
+function setupDocsUpload() {
+  const input = document.getElementById("docsUpload");
+  const list = document.getElementById("docsList");
+
+  input.addEventListener("change", () => {
+    docsTemp = [];
+    list.innerHTML = "";
+    
+    Array.from(input.files).forEach(file => {
+      docsTemp.push({
+        nome: file.name,
+        tipo: file.type,
+        tamanho: file.size
+      });
+
+      const div = document.createElement("div");
+      div.className = "docs-item";
+      div.innerHTML = `
+        <span>${file.name}</span>
+        <span class="docs-status saved">OK</span>
+      `;
+      list.appendChild(div);
+    });
+  });
+}
+
+function collectDocs() {
+  return docsTemp.slice();
+}
+
+/* =========================================================
+   SALVAR CONTRATO
+   ========================================================= */
 function handleContractSave() {
   const clienteNome = document.getElementById("clienteNome").value.trim();
   const clienteCpf = document.getElementById("clienteCpf").value.trim();
@@ -139,21 +242,25 @@ function handleContractSave() {
   const clienteCidade = document.getElementById("clienteCidade").value.trim();
   const clienteEstado = document.getElementById("clienteEstado").value.trim();
 
-  const valorEmprestimo = parseFloat(document.getElementById("valorEmprestimo").value || "0");
-  const percentual = parseFloat(document.getElementById("percentual").value || "0");
-  const quantParcelas = parseInt(document.getElementById("quantParcelas").value || "0", 10);
+  const valorEmprestimo = parseFloat(document.getElementById("valorEmprestimo").value);
+  const percentual = parseFloat(document.getElementById("percentual").value);
+  const quantParcelas = parseInt(document.getElementById("quantParcelas").value);
+  const tipoJuros = document.getElementById("tipoJuros")?.value || "total";
+  const diasJuros = parseInt(document.getElementById("diasJuros")?.value || "0");
 
   if (!clienteNome || !valorEmprestimo || !percentual || !quantParcelas) {
-    showToast("Preencha nome, valor, porcentagem e quantidade de parcelas.");
+    showToast("Campos obrigatórios faltando.");
     return null;
   }
 
   const parcelas = collectParcelas();
   const docs = collectDocs();
 
-  const clientes = loadFromStorage(STORAGE_CLIENTES);
-  let clienteId = clientes.findIndex(c => c.cpf === clienteCpf && clienteCpf);
-  if (clienteId === -1) {
+  /* === Salvar cliente ================================= */
+  let clientes = loadFromStorage(STORAGE_CLIENTES);
+  let clienteIndex = clientes.findIndex(c => c.cpf === clienteCpf);
+
+  if (clienteIndex === -1) {
     clientes.push({
       id: Date.now(),
       nome: clienteNome,
@@ -164,76 +271,48 @@ function handleContractSave() {
       cidade: clienteCidade,
       estado: clienteEstado
     });
-    clienteId = clientes.length - 1;
+    clienteIndex = clientes.length - 1;
     saveToStorage(STORAGE_CLIENTES, clientes);
   }
 
-  const contracts = loadFromStorage(STORAGE_CONTRACTS);
+  /* === Salvar contrato ================================ */
+  let contratos = loadFromStorage(STORAGE_CONTRACTS);
   const newId = Date.now();
+
   const contrato = {
     id: newId,
-    clienteIndex: clienteId,
+    clienteIndex,
     valorEmprestimo,
     percentual,
     quantParcelas,
+    tipoJuros,
+    diasJuros,
     parcelas,
     documentos: docs,
     criadoEm: new Date().toISOString()
   };
-  contracts.push(contrato);
-  saveToStorage(STORAGE_CONTRACTS, contracts);
+
+  contratos.push(contrato);
+  saveToStorage(STORAGE_CONTRACTS, contratos);
   localStorage.setItem(STORAGE_LAST_CONTRACT_ID, String(newId));
 
-  showToast("Contrato salvo com sucesso.");
+  showToast("Contrato salvo!");
   renderClientesTable();
+
   return contrato;
 }
 
-let docsTemp = [];
-
-function collectDocs() {
-  return docsTemp.slice();
-}
-
-function setupDocsUpload() {
-  const input = document.getElementById("docsUpload");
-  const list = document.getElementById("docsList");
-  if (!input || !list) return;
-
-  input.addEventListener("change", () => {
-    docsTemp = [];
-    list.innerHTML = "";
-    Array.from(input.files || []).forEach(file => {
-      docsTemp.push({
-        nome: file.name,
-        tamanho: file.size,
-        tipo: file.type
-      });
-    });
-
-    docsTemp.forEach(d => {
-      const div = document.createElement("div");
-      div.className = "docs-item";
-      div.innerHTML = `
-        <span>${d.nome}</span>
-        <span class="docs-status pending">Pendente envio</span>
-      `;
-      list.appendChild(div);
-    });
-  });
-}
-
+/* =========================================================
+   LISTAR MOTOBOYS
+   ========================================================= */
 function preencherMotoboys() {
   const select = document.getElementById("motoboySelect");
-  if (!select) return;
-  const usersRaw = localStorage.getItem(STORAGE_USERS_KEY);
-  let users = [];
-  if (usersRaw) {
-    try { users = JSON.parse(usersRaw); } catch {}
-  }
-  const motoboys = users.filter(u => u.role === "motoboy");
-  select.innerHTML = `<option value="">Selecione um motoboy cadastrado</option>`;
-  motoboys.forEach(m => {
+
+  let users = loadFromStorage(STORAGE_USERS_KEY);
+  let mts = users.filter(u => u.role === "motoboy");
+
+  select.innerHTML = `<option value="">Selecione um motoboy</option>`;
+  mts.forEach(m => {
     const opt = document.createElement("option");
     opt.value = m.email;
     opt.textContent = `${m.name} (${m.email})`;
@@ -241,164 +320,204 @@ function preencherMotoboys() {
   });
 }
 
+/* =========================================================
+   ENVIAR AO MOTOBOY
+   ========================================================= */
 function enviarContratoMotoboy() {
-  const select = document.getElementById("motoboySelect");
-  if (!select || !select.value) {
+  const select = document.getElementById("motoboySelect").value;
+
+  if (!select) {
     showToast("Selecione um motoboy.");
     return;
   }
+
   const lastId = localStorage.getItem(STORAGE_LAST_CONTRACT_ID);
-  if (!lastId) {
-    showToast("Nenhum contrato encontrado para envio.");
-    return;
-  }
-  const contracts = loadFromStorage(STORAGE_CONTRACTS);
-  const contrato = contracts.find(c => String(c.id) === String(lastId));
-  if (!contrato) {
-    showToast("Contrato não localizado.");
-    return;
-  }
+  const contratos = loadFromStorage(STORAGE_CONTRACTS);
+  const contrato = contratos.find(c => String(c.id) === lastId);
+
   const clientes = loadFromStorage(STORAGE_CLIENTES);
   const cliente = clientes[contrato.clienteIndex];
 
   const envios = loadFromStorage(STORAGE_ENVIOS);
+
   envios.push({
     id: Date.now(),
     contratoId: contrato.id,
-    motoboyEmail: select.value,
-    clienteNome: cliente ? cliente.nome : "",
-    clienteCidade: cliente ? cliente.cidade : "",
+    motoboyEmail: select,
+    clienteNome: cliente.nome,
+    clienteCidade: cliente.cidade,
     documentos: contrato.documentos,
     enviadoEm: new Date().toISOString()
   });
+
   saveToStorage(STORAGE_ENVIOS, envios);
 
-  showToast("Envio registrado para o motoboy.");
+  showToast("Enviado ao motoboy.");
   renderEnviosTable();
 }
 
+/* =========================================================
+   TABELAS (Clientes e Envios)
+   ========================================================= */
 function renderClientesTable() {
-  const container = document.getElementById("clientesList");
-  if (!container) return;
+  const div = document.getElementById("clientesList");
   const clientes = loadFromStorage(STORAGE_CLIENTES);
+
   if (!clientes.length) {
-    container.innerHTML = "<p>Nenhum cliente cadastrado ainda.</p>";
+    div.innerHTML = "<p>Nenhum cliente ainda.</p>";
     return;
   }
-  let html = '<table class="table-list"><thead><tr><th>Nome</th><th>CPF</th><th>Cidade</th><th>Telefone</th></tr></thead><tbody>';
+
+  let html = `
+    <table class="table-list">
+      <thead>
+        <tr><th>Nome</th><th>CPF</th><th>Cidade</th><th>Telefone</th></tr>
+      </thead><tbody>
+  `;
+
   clientes.forEach(c => {
-    html += `<tr><td>${c.nome}</td><td>${c.cpf || "-"}</td><td>${c.cidade || "-"}</td><td>${c.telefone || "-"}</td></tr>`;
+    html += `
+      <tr>
+        <td>${c.nome}</td>
+        <td>${c.cpf}</td>
+        <td>${c.cidade}</td>
+        <td>${c.telefone}</td>
+      </tr>`;
   });
+
   html += "</tbody></table>";
-  container.innerHTML = html;
+  div.innerHTML = html;
 }
 
 function renderEnviosTable() {
-  const container = document.getElementById("enviosList");
-  if (!container) return;
+  const div = document.getElementById("enviosList");
   const envios = loadFromStorage(STORAGE_ENVIOS);
+
   if (!envios.length) {
-    container.innerHTML = "<p>Nenhum envio registrado.</p>";
+    div.innerHTML = "<p>Nenhum envio registrado.</p>";
     return;
   }
-  let html = '<table class="table-list"><thead><tr><th>Motoboy</th><th>Cliente</th><th>Cidade</th><th>Data envio</th></tr></thead><tbody>';
+
+  let html = `
+    <table class="table-list">
+      <thead>
+        <tr><th>Motoboy</th><th>Cliente</th><th>Cidade</th><th>Data</th></tr>
+      </thead><tbody>
+  `;
+
   envios.forEach(e => {
-    const data = new Date(e.enviadoEm).toLocaleString();
-    html += `<tr><td>${e.motoboyEmail}</td><td>${e.clienteNome}</td><td>${e.clienteCidade}</td><td>${data}</td></tr>`;
+    html += `
+      <tr>
+        <td>${e.motoboyEmail}</td>
+        <td>${e.clienteNome}</td>
+        <td>${e.clienteCidade}</td>
+        <td>${new Date(e.enviadoEm).toLocaleString()}</td>
+      </tr>`;
   });
+
   html += "</tbody></table>";
-  container.innerHTML = html;
+  div.innerHTML = html;
 }
 
+/* =========================================================
+   VISUALIZAR CONTRATO (PDF)
+   ========================================================= */
 function visualizarUltimoContrato() {
-  const lastId = localStorage.getItem(STORAGE_LAST_CONTRACT_ID);
-  if (!lastId) {
-    showToast("Nenhum contrato gerado ainda.");
+  const id = localStorage.getItem(STORAGE_LAST_CONTRACT_ID);
+  if (!id) {
+    showToast("Nenhum contrato encontrado.");
     return;
   }
-  const contracts = loadFromStorage(STORAGE_CONTRACTS);
-  const contrato = contracts.find(c => String(c.id) === String(lastId));
-  if (!contrato) {
-    showToast("Contrato não localizado.");
-    return;
-  }
+
+  const contratos = loadFromStorage(STORAGE_CONTRACTS);
+  const contrato = contratos.find(c => String(c.id) === id);
+
   const clientes = loadFromStorage(STORAGE_CLIENTES);
   const cliente = clientes[contrato.clienteIndex];
 
-  const win = window.open("", "_blank");
-  if (!win) return;
-  const parcelasHtml = contrato.parcelas.map((p, idx) => `
-    <tr>
-      <td>${idx + 1}</td>
-      <td>${p.data}</td>
-      <td>R$ ${Number(p.valor).toFixed(2)}</td>
-    </tr>
-  `).join("");
+  const parcelas = contrato.parcelas || [];
+  const totalLinhas = Math.max(10, parcelas.length);
 
+  let linhas = "";
+  for (let i = 0; i < totalLinhas; i++) {
+    const p = parcelas[i];
+    linhas += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${p?.data || ""}</td>
+        <td>${p?.valor ? "R$ " + Number(p.valor).toFixed(2) : ""}</td>
+      </tr>
+    `;
+  }
+
+  let tipoLabel = "";
+  if (contrato.tipoJuros === "total") tipoLabel = "Percentual sobre o valor total";
+  else if (contrato.tipoJuros === "mensal") tipoLabel = "Percentual mensal por parcela";
+  else if (contrato.tipoJuros === "diario") tipoLabel = `Percentual por dias (${contrato.diasJuros} dias)`;
+
+  const win = window.open("", "_blank");
   win.document.write(`
     <html>
     <head>
-      <meta charset="UTF-8" />
-      <title>Contrato - ${cliente ? cliente.nome : ""}</title>
+      <meta charset="UTF-8">
+      <title>Contrato</title>
       <style>
-        body { font-family: Arial, sans-serif; margin: 24px; }
-        h1 { font-size: 20px; margin-bottom: 8px; }
-        h2 { font-size: 16px; margin-top: 18px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-        th, td { border: 1px solid #e5e7eb; padding: 6px 8px; font-size: 13px; }
-        th { background: #f3f4f6; text-align: left; }
-        .linha { margin-top: 18px; border-top: 1px solid #111827; width: 260px; }
-        .assinatura { margin-top: 4px; font-size: 13px; }
-        .small { font-size: 12px; color: #4b5563; margin-top: 12px; }
+        @page { size: A4; margin: 20mm; }
+        body { font-family: Arial; padding: 20px; display:flex; flex-direction:column; height:100%; }
+        .header { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+        .header-logo { width:70px; }
+        table { width:100%; border-collapse:collapse; }
+        th,td { border:1px solid #ccc; padding:6px; font-size:13px; }
+        th { background:#eee; }
+        .assinatura-area { margin-top:auto; text-align:center; padding-top:40px; }
+        .linha-assinatura { width:260px; margin:0 auto; border-top:1px solid #111; }
       </style>
     </head>
     <body>
-      <h1>Contrato de Empréstimo</h1>
-      <p><strong>Empresa:</strong> Nome da Empresa — CNPJ 00.000.000/0000-00</p>
-      <p><strong>Cliente:</strong> ${cliente ? cliente.nome : ""}</p>
-      <p><strong>CPF:</strong> ${cliente ? cliente.cpf : ""} — <strong>RG:</strong> ${cliente ? cliente.rg : ""}</p>
-      <p><strong>Endereço:</strong> ${cliente ? cliente.endereco : ""} — ${cliente ? cliente.cidade : ""}/${cliente ? cliente.estado : ""}</p>
 
-      <h2>Dados do Empréstimo</h2>
-      <p><strong>Valor emprestado:</strong> R$ ${Number(contrato.valorEmprestimo).toFixed(2)}</p>
-      <p><strong>Porcentagem:</strong> ${contrato.percentual}% — <strong>Quantidade de parcelas:</strong> ${contrato.quantParcelas}</p>
+      <div class="header">
+        <img src="../icons/logo.png" class="header-logo">
+        <div>
+          <h2>Contrato de Empréstimo</h2>
+        </div>
+      </div>
 
-      <h2>Parcelas</h2>
+      <p><strong>Cliente:</strong> ${cliente.nome}</p>
+      <p><strong>CPF:</strong> ${cliente.cpf} — <strong>RG:</strong> ${cliente.rg}</p>
+      <p><strong>Endereço:</strong> ${cliente.endereco} — ${cliente.cidade}/${cliente.estado}</p>
+
+      <p><strong>Valor emprestado:</strong> R$ ${contrato.valorEmprestimo.toFixed(2)}</p>
+      <p><strong>Percentual:</strong> ${contrato.percentual}% — <strong>Tipo:</strong> ${tipoLabel}</p>
+
+      <h3>Parcelas</h3>
       <table>
         <thead>
-          <tr><th>#</th><th>Vencimento</th><th>Valor</th></tr>
+          <tr><th>#</th><th>Data</th><th>Valor</th></tr>
         </thead>
-        <tbody>
-          ${parcelasHtml}
-        </tbody>
+        <tbody>${linhas}</tbody>
       </table>
 
-      <p class="small">
-        Segunda a sexta, multa de R$ 100,00. Terça, quarta e quinta, multa de R$ 40,00.
-        Nos feriados, multa de R$ 200,00.
-      </p>
+      <div class="assinatura-area">
+        <div class="linha-assinatura"></div>
+        <div>${cliente.nome}</div>
+      </div>
 
-      <div class="linha"></div>
-      <div class="assinatura">${cliente ? cliente.nome : ""}</div>
-
-      <script>
-        window.print();
-      </script>
+      <script>window.print()</script>
     </body>
     </html>
   `);
+
   win.document.close();
 }
 
+/* =========================================================
+   SISTEMA - ON LOAD
+   ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  // segurança básica: se não tiver usuário atual, manda para login
   const user = getCurrentUser();
   if (!user) {
     window.location.href = "../index.html";
     return;
-  }
-  if (user.role !== "caixa") {
-    // rota mesmo assim, mas ideal seria bloquear
   }
 
   renderUserInfo();
@@ -408,31 +527,20 @@ document.addEventListener("DOMContentLoaded", () => {
   renderClientesTable();
   renderEnviosTable();
 
-  const btnLogout = document.getElementById("btnLogout");
-  if (btnLogout) {
-    btnLogout.addEventListener("click", () => {
-      localStorage.removeItem(STORAGE_CURRENT_USER);
-      window.location.href = "../index.html";
-    });
-  }
+  document.getElementById("btnLogout").addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_CURRENT_USER);
+    window.location.href = "../index.html";
+  });
 
-  const btnGerarParcelas = document.getElementById("btnGerarParcelas");
-  if (btnGerarParcelas) btnGerarParcelas.addEventListener("click", gerarParcelasAutomaticas);
+  document.getElementById("btnGerarParcelas").addEventListener("click", gerarParcelasAutomaticas);
+  document.getElementById("btnAdicionarParcela").addEventListener("click", () => {
+    addParcelRow(document.getElementById("parcelListWrapper"));
+  });
 
-  const btnAdicionarParcela = document.getElementById("btnAdicionarParcela");
-  if (btnAdicionarParcela) {
-    btnAdicionarParcela.addEventListener("click", () => {
-      const wrapper = document.getElementById("parcelListWrapper");
-      if (wrapper) addParcelRow(wrapper);
-    });
-  }
-
-  const btnEnviarMotoboy = document.getElementById("btnEnviarMotoboy");
-  if (btnEnviarMotoboy) btnEnviarMotoboy.addEventListener("click", () => {
+  document.getElementById("btnEnviarMotoboy").addEventListener("click", () => {
     const contrato = handleContractSave();
     if (contrato) enviarContratoMotoboy();
   });
 
-  const btnVerContratoGerado = document.getElementById("btnVerContratoGerado");
-  if (btnVerContratoGerado) btnVerContratoGerado.addEventListener("click", visualizarUltimoContrato);
+  document.getElementById("btnVerContratoGerado").addEventListener("click", visualizarUltimoContrato);
 });
