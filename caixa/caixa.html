@@ -220,14 +220,15 @@
           <select id="tipoJuros" class="select">
             <option value="total">Percentual sobre o valor total</option>
             <option value="mensal">Percentual mensal (por parcela)</option>
-            <option value="diario">Percentual por dias</option>
+            <option value="diario_total">Percentual por dias (fixo sobre o total)</option>
+            <option value="diario_prop">Percentual por dias (proporcional)</option>
           </select>
         </div>
 
-        <div class="form-item full">
+        <div class="form-item full" id="diasJurosGroup">
           <label>Dias do contrato (para juros diário)</label>
           <input type="number" id="diasJuros" placeholder="Ex: 14, 20, 33...">
-          <small style="font-size:0.78rem;color:#6b7280;">Usado apenas no modo "Percentual por dias".</small>
+          <small style="font-size:0.78rem;color:#6b7280;">Usado apenas nos modos de juros por dias.</small>
         </div>
 
         <!-- GERAR PARCELAS -->
@@ -237,6 +238,10 @@
         </div>
 
         <div id="parcelListWrapper" class="parcel-box"></div>
+
+        <div class="action-row">
+          <button class="btn-primary full" id="btnSalvarContrato">Salvar contrato (sem enviar)</button>
+        </div>
       </div>
 
       <!-- DOCUMENTOS E ENVIO -->
