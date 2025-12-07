@@ -8,100 +8,70 @@
   <link rel="stylesheet" href="../css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- ===================================================== -->
-  <!-- CSS FINAL CORRIGIDO — MENU + SAIR + ESPAÇAMENTO       -->
-  <!-- ===================================================== -->
   <style>
     html, body {
-      overflow-x: hidden !important;
-      max-width: 100% !important;
+      overflow-x: hidden;
+      max-width: 100%;
       font-family: "Inter", sans-serif;
     }
 
-    /* ============================ MOBILE ============================ */
+    /* ================= MENU FIXO + COLADO ================= */
+    .sidebar-new {
+      position: sticky;
+      top: 72px !important; 
+      z-index: 40;
+      width: 100%;
+      padding: 8px 8px;
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* =================== SAIR NA TOPBAR =================== */
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #btnLogoutHeader {
+      background: none;
+      border: none;
+      color: #b91c1c;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 10px;
+    }
+
+    /* ===================== MENU ALINHADO ===================== */
+    .sidebar-menu {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .sidebar-menu .menu-item {
+      flex: 1;
+      height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.75rem;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    /* ==================== MOBILE ==================== */
     @media (max-width: 900px) {
-
-      /* LAYOUT */
-      .panel-layout {
-        flex-direction: column !important;
-        width: 100% !important;
-        overflow-x: hidden !important;
-      }
-
-      /* MENU SUPERIOR */
-      .sidebar-new {
-        position: sticky !important;
-        top: 60px !important;
-        z-index: 30 !important;
-
-        width: 100% !important;
-        padding: 8px 6px !important;
-        background: #fff;
-        border-bottom: 1px solid #e2e8f0;
-
-        display: flex;
-        justify-content: center !important;
-        align-items: center !important;
-      }
-
-      .sidebar-user,
-      .sidebar-section {
-        display: none !important;
-      }
-
-      /* CONTAINER DOS BOTÕES */
-      .sidebar-menu {
-        width: 100% !important;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between !important;
-        align-items: center !important;
-        gap: 6px !important;
-      }
-
-      /* BOTÕES DO MENU — altura igual, alinhamento perfeito */
-      .sidebar-menu .menu-item,
-      #btnLogout {
-        flex: 1 !important;
-        height: 36px !important;
-        padding: 0 !important;
-
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-
-        font-size: 0.74rem !important;
-        border-radius: 10px !important;
-        white-space: nowrap !important;
-      }
-
-      /* ESTILO DO SAIR */
-      #btnLogout {
-        background: #fef2f2 !important;
-        border: 1px solid #fecaca !important;
-        color: #b91c1c !important;
-      }
-
-      /* CORREÇÃO DO TEXTO COLADO */
       .panel-main {
-        margin-top: 90px !important;
-        padding: 14px !important;
-        width: 100% !important;
-        overflow-x: hidden !important;
+        padding: 14px;
+        margin-top: 110px !important;
       }
-
-      /* Espaço maior abaixo do "Novo Contrato" */
-      .panel-header {
-        margin-bottom: 26px !important;
-      }
-
-      .card-new,
-      .form-item input,
-      .form-item select,
-      .form-grid-2,
-      .form-grid-3 {
-        max-width: 100% !important;
-      }
+      .panel-header { margin-bottom: 28px; }
     }
   </style>
 </head>
@@ -118,157 +88,150 @@
       </div>
     </div>
 
+    <!-- BOTÃO SAIR NA TOPBAR -->
     <div class="topbar-user">
-      <span id="headerUserName">Ezequiel</span>
-      <img src="../icons/user-default.png" id="headerAvatar" class="topbar-avatar" alt="Avatar">
+      <button id="btnLogoutHeader">Sair</button>
     </div>
   </header>
 
-  <!-- LAYOUT PRINCIPAL -->
-  <div class="panel-layout">
+  <!-- MENU SUPERIOR FIXO E COLADO -->
+  <aside class="sidebar-new">
+    <nav class="sidebar-menu">
+      <button class="menu-item active" data-section="novo-contrato">📄 Novo Contrato</button>
+      <button class="menu-item" data-section="clientes">👥 Clientes</button>
+      <button class="menu-item" data-section="envios">📤 Envios</button>
+      <button class="menu-item disabled">🔒 Caixa</button>
+    </nav>
+  </aside>
 
-    <!-- MENU SUPERIOR ALINHADO -->
-    <aside class="sidebar-new">
-      <nav class="sidebar-menu">
+  <!-- CONTEÚDO -->
+  <main class="panel-main">
+    <div class="panel-header">
+      <h2 id="mainTitle">Novo Contrato</h2>
+      <p class="panel-desc">
+        Cadastro completo de cliente, contrato, documentos e envio ao motoboy.
+      </p>
+    </div>
 
-        <button class="menu-item active" data-section="novo-contrato">📄 Novo Contrato</button>
-        <button class="menu-item" data-section="clientes">👥 Clientes</button>
-        <button class="menu-item" data-section="envios">📤 Envios</button>
-        <button class="menu-item disabled">🔒 Caixa</button>
+    <!-- seção contrato -->
+    <section class="panel-section active" id="section-novo-contrato">
+      <div class="card-new">
+        <h3 class="card-title">Dados do Cliente</h3>
 
-        <!-- SAIR agora dentro do mesmo flex -->
-        <button id="btnLogout" class="menu-item logout-btn">Sair</button>
+        <form id="contractForm">
+          <div class="form-grid-2">
 
-      </nav>
-    </aside>
+            <div class="form-item">
+              <label>Nome completo</label>
+              <input type="text" id="clienteNome">
+            </div>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="panel-main">
+            <div class="form-item">
+              <label>CPF</label>
+              <input type="text" id="clienteCpf">
+            </div>
 
-      <div class="panel-header">
-        <h2 id="mainTitle">Novo Contrato
-        </h2>
-        <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
+            <div class="form-item">
+              <label>Identidade</label>
+              <input type="text" id="clienteRg">
+            </div>
+
+            <div class="form-item">
+              <label>Telefone (WhatsApp)</label>
+              <input type="text" id="clienteTelefone">
+            </div>
+
+            <div class="form-item full">
+              <label>Endereço completo</label>
+              <input type="text" id="clienteEndereco">
+            </div>
+
+            <div class="form-item">
+              <label>Cidade</label>
+              <input type="text" id="clienteCidade">
+            </div>
+
+            <div class="form-item">
+              <label>Estado</label>
+              <input type="text" maxlength="2" id="clienteEstado">
+            </div>
+
+          </div>
+        </form>
       </div>
 
-      <!-- NOVO CONTRATO -->
-      <section class="panel-section active" id="section-novo-contrato">
-        <div class="card-new">
-          <h3 class="card-title">Dados do Cliente</h3>
+      <div class="card-new">
+        <h3 class="card-title">Dados do Contrato</h3>
 
-          <form id="contractForm">
-            <div class="form-grid-2">
-
-              <div class="form-item">
-                <label>Nome completo</label>
-                <input type="text" id="clienteNome">
-              </div>
-
-              <div class="form-item">
-                <label>CPF</label>
-                <input type="text" id="clienteCpf">
-              </div>
-
-              <div class="form-item">
-                <label>Identidade</label>
-                <input type="text" id="clienteRg">
-              </div>
-
-              <div class="form-item">
-                <label>Telefone (WhatsApp)</label>
-                <input type="text" id="clienteTelefone">
-              </div>
-
-              <div class="form-item full">
-                <label>Endereço completo</label>
-                <input type="text" id="clienteEndereco">
-              </div>
-
-              <div class="form-item">
-                <label>Cidade</label>
-                <input type="text" id="clienteCidade">
-              </div>
-
-              <div class="form-item">
-                <label>Estado</label>
-                <input type="text" maxlength="2" id="clienteEstado">
-              </div>
-
-            </div>
-          </form>
-        </div>
-
-        <div class="card-new">
-          <h3 class="card-title">Dados do Contrato</h3>
-
-          <div class="form-grid-3">
-            <div class="form-item">
-              <label>Valor emprestado (R$)</label>
-              <input type="number" id="valorEmprestimo">
-            </div>
-
-            <div class="form-item">
-              <label>Porcentagem (%)</label>
-              <input type="number" id="percentual">
-            </div>
-
-            <div class="form-item">
-              <label>Qtd. parcelas</label>
-              <input type="number" id="quantParcelas">
-            </div>
+        <div class="form-grid-3">
+          <div class="form-item">
+            <label>Valor emprestado (R$)</label>
+            <input type="number" id="valorEmprestimo">
           </div>
 
-          <div class="action-row">
-            <button class="btn-secondary" id="btnGerarParcelas">Gerar parcelas</button>
-            <button class="btn-secondary" id="btnAdicionarParcela">Adicionar manual</button>
+          <div class="form-item">
+            <label>Porcentagem (%)</label>
+            <input type="number" id="percentual">
           </div>
 
-          <div id="parcelListWrapper" class="parcel-box"></div>
-        </div>
-
-        <div class="card-new">
-          <h3 class="card-title">Documentos e envio</h3>
-
-          <label class="upload-label">Importar documentos</label>
-          <input type="file" id="docsUpload" multiple class="upload-input">
-          <div id="docsList" class="docs-list"></div>
-
-          <label class="upload-label" style="margin-top:14px;">Enviar para motoboy</label>
-          <select id="motoboySelect" class="select">
-            <option value="">Selecione um motoboy</option>
-          </select>
-
-          <div class="action-row">
-            <button class="btn-secondary full" id="btnVerContratoGerado">Visualizar contrato</button>
-            <button class="btn-primary full" id="btnEnviarMotoboy">Enviar contrato</button>
+          <div class="form-item">
+            <label>Qtd. parcelas</label>
+            <input type="number" id="quantParcelas">
           </div>
         </div>
-      </section>
 
-      <!-- CLIENTES -->
-      <section class="panel-section" id="section-clientes">
-        <div class="card-new">
-          <h3 class="card-title">Clientes cadastrados</h3>
-          <div id="clientesList"></div>
+        <div class="action-row">
+          <button class="btn-secondary" id="btnGerarParcelas">Gerar parcelas</button>
+          <button class="btn-secondary" id="btnAdicionarParcela">Adicionar manual</button>
         </div>
-      </section>
 
-      <!-- ENVIOS -->
-      <section class="panel-section" id="section-envios">
-        <div class="card-new">
-          <h3 class="card-title">Envios ao Motoboy</h3>
-          <div id="enviosList"></div>
+        <div id="parcelListWrapper" class="parcel-box"></div>
+      </div>
+
+      <div class="card-new">
+        <h3 class="card-title">Documentos e envio</h3>
+
+        <label class="upload-label">Importar documentos</label>
+        <input type="file" id="docsUpload" multiple class="upload-input">
+        <div id="docsList" class="docs-list"></div>
+
+        <label class="upload-label" style="margin-top:14px;">Enviar para motoboy</label>
+        <select id="motoboySelect" class="select">
+          <option value="">Selecione um motoboy</option>
+        </select>
+
+        <div class="action-row">
+          <button class="btn-secondary full" id="btnVerContratoGerado">Visualizar contrato</button>
+          <button class="btn-primary full" id="btnEnviarMotoboy">Enviar contrato</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-    </main>
-  </div>
+    <section class="panel-section" id="section-clientes">
+      <div class="card-new">
+        <h3 class="card-title">Clientes cadastrados</h3>
+        <div id="clientesList"></div>
+      </div>
+    </section>
+
+    <section class="panel-section" id="section-envios">
+      <div class="card-new">
+        <h3 class="card-title">Envios ao Motoboy</h3>
+        <div id="enviosList"></div>
+      </div>
+    </section>
+  </main>
 
   <!-- TOAST -->
-  <div class="toast" id="toast">
-    <span id="toastMessage">Ação realizada.</span>
-  </div>
+  <div class="toast" id="toast"><span id="toastMessage">Ação realizada.</span></div>
 
   <script src="../js/caixa.js"></script>
+
+  <script>
+    // botão sair funcionando
+    document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+      window.location.href = "../login.html";
+    });
+  </script>
 </body>
 </html>
