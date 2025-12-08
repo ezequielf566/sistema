@@ -427,34 +427,155 @@ function enviarContratoMotoboy() {
 /* =========================================================
    TABELAS (Clientes e Envios)
    ========================================================= */
+
 function renderClientesTable() {
   const div = document.getElementById("clientesList");
   const clientes = loadFromStorage(STORAGE_CLIENTES);
+  const contratos = loadFromStorage(STORAGE_CONTRACTS);
 
   if (!clientes.length) {
-    div.innerHTML = "<p>Nenhum cliente ainda.</p>";
+    div.innerHTML = "<p>Nenhum cliente cadastrado ainda.</p>";
     return;
   }
 
   let html = `
     <table class="table-list">
       <thead>
-        <tr><th>Nome</th><th>CPF</th><th>Cidade</th><th>Telefone</th></tr>
-      </thead><tbody>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Status</th>
+          <th style="text-align:center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
   `;
 
-  clientes.forEach(c => {
+  clientes.forEach(cliente => {
+    const contratosCliente = contratos
+      .filter(c => clientes[c.clienteIndex]?.cpf === cliente.cpf)
+      .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
+
+    let statusTxt = "Sem contrato";
+    let statusColor = "#e5e7eb";
+
+    if (contratosCliente.length) {
+      const ultimo = contratosCliente[0];
+      const datas = ultimo.parcelas.map(p => new Date(p.data));
+      const ultimaData = datas.sort((a, b) => b - a)[0];
+
+      const hoje = new Date();
+      const diff = Math.ceil((ultimaData - hoje) / (1000 * 60 * 60 * 24));
+
+      if (diff < 0) {
+        statusTxt = "Vencido";
+        statusColor = "#fee2e2";
+      } else if (diff <= 3) {
+        statusTxt = "Próximo do vencimento";
+        statusColor = "#fef9c3";
+      } else {
+        statusTxt = "Em andamento";
+        statusColor = "#d1fae5";
+      }
+    }
+
     html += `
       <tr>
-        <td>${c.nome}</td>
-        <td>${c.cpf}</td>
-        <td>${c.cidade}</td>
-        <td>${c.telefone}</td>
-      </tr>`;
+        <td>${cliente.nome}</td>
+        <td>${cliente.cpf}</td>
+        <td>
+          <span style="
+            background:${statusColor};
+            padding:4px 10px;
+            border-radius:6px;
+            font-size:0.75rem;
+            display:inline-block;
+          ">
+            ${statusTxt}
+          </span>
+        </td>
+        <td style="text-align:center;">
+          <button class="btn-small" style="margin-right:4px;" onclick="renovarContrato('${cliente.cpf}')">
+            🔄 Renovar
+          </button>
+          <button class="btn-small" style="background:#25D366;color:white;" onclick="realizarCobranca('${cliente.telefone}', '${cliente.nome}')">
+            🟢 WhatsApp
+          </button>
+        </td>
+      </tr>
+    `;
   });
 
   html += "</tbody></table>";
   div.innerHTML = html;
+}
+
+function renovarContrato(cpf) {
+  const clientes = loadFromStorage(STORAGE_CLIENTES);
+  const contratos = loadFromStorage(STORAGE_CONTRACTS);
+
+  const cliente = clientes.find(c => c.cpf === cpf);
+  if (!cliente) {
+    alert("Cliente não encontrado.");
+    return;
+  }
+
+  const contratosCliente = contratos
+    .filter(c => clientes[c.clienteIndex]?.cpf === cpf)
+    .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
+
+  const ultimo = contratosCliente[0];
+  if (!ultimo) {
+    alert("Este cliente ainda não possui contrato salvo.");
+    return;
+  }
+
+  document.getElementById("clienteNome").value = cliente.nome;
+  document.getElementById("clienteCpf").value = cliente.cpf;
+  document.getElementById("clienteRg").value = cliente.rg;
+  document.getElementById("clienteTelefone").value = cliente.telefone;
+  document.getElementById("clienteEndereco").value = cliente.endereco;
+  document.getElementById("clienteCidade").value = cliente.cidade;
+  document.getElementById("clienteEstado").value = cliente.estado;
+
+  document.getElementById("valorEmprestimo").value = ultimo.valorEmprestimo;
+  document.getElementById("percentual").value = ultimo.percentual;
+  document.getElementById("quantParcelas").value = ultimo.quantParcelas;
+  document.getElementById("tipoJuros").value = ultimo.tipoJuros;
+
+  if (ultimo.tipoJuros === "diario_total") {
+    document.getElementById("diasJuros").value = ultimo.diasJuros;
+  }
+
+  const wrapper = document.getElementById("parcelListWrapper");
+  wrapper.innerHTML = "";
+
+  (ultimo.parcelas || []).forEach(p => {
+    const div = document.createElement("div");
+    div.className = "parcel-row";
+    div.innerHTML = `
+      <input type="date" class="parcela-data" value="${p.data}">
+      <input type="number" class="parcela-valor" value="${p.valor}">
+      <button type="button" class="btn-small-danger" onclick="this.parentElement.remove()">X</button>
+    `;
+    wrapper.appendChild(div);
+  });
+
+  showToast("Contrato carregado para renovação.");
+}
+
+function realizarCobranca(telefone, nome) {
+  if (!telefone) {
+    alert("Cliente sem telefone cadastrado.");
+    return;
+  }
+
+  const msg = encodeURIComponent(
+    `Olá ${nome}! 😊\nEstou passando para lembrar sobre a pendência do seu contrato. Posso te ajudar com algo?`
+  );
+
+  const link = `https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`;
+  window.open(link, "_blank");
 }
 
 function renderEnviosTable() {
