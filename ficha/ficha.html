@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel do Caixa</title>
 
   <link rel="stylesheet" href="../css/style.css">
@@ -70,6 +70,7 @@
       font-size: 0.75rem;
       border-radius: 10px;
       white-space: nowrap;
+      cursor: pointer;
     }
 
     .panel-main {
@@ -88,13 +89,63 @@
       margin-bottom: 16px !important;
     }
 
-    /* Extra - Renovação */
+    /* Wrapper do botão Clientes + dropdown */
+    .menu-clientes-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-clientes-wrapper > .menu-item {
+      width: 100%;
+    }
+
+    /* Dropdown profissional de Clientes */
+    #submenu-clientes {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+      display: none;
+      flex-direction: column;
+      padding: 6px 0;
+      z-index: 1200;
+    }
+
+    #submenu-clientes button {
+      background: transparent;
+      border: none;
+      padding: 9px 14px;
+      text-align: left;
+      font-size: 0.8rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    #submenu-clientes button:hover {
+      background: #f1f5f9;
+    }
+
+    /* Itens de funcionário na renovação */
     .func-item {
       padding: 10px;
-      border: 1px solid #ddd;
+      border: 1px solid #e2e8f0;
       border-radius: 8px;
       margin-bottom: 8px;
       cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .func-item span.func-role {
+      font-size: 0.75rem;
+      opacity: 0.7;
     }
   </style>
 </head>
@@ -123,8 +174,16 @@
   <aside class="sidebar-new">
     <nav class="sidebar-menu">
       <button class="menu-item active" data-section="novo-contrato">📄 Contratos</button>
-      <button class="menu-item" data-section="clientes">👥 Clientes</button>
-      <button class="menu-item" data-section="renovacao">♻ Renovação</button>
+
+      <!-- Wrapper Clientes + submenu -->
+      <div class="menu-clientes-wrapper">
+        <button class="menu-item" id="btnClientes" data-section="clientes">👥 Clientes ▾</button>
+        <div id="submenu-clientes">
+          <button type="button" data-sub="clientes">Ver Clientes</button>
+          <button type="button" data-sub="renovacao">Renovação</button>
+        </div>
+      </div>
+
       <button class="menu-item" data-section="envios">📤 Envios</button>
       <button class="menu-item disabled">🔒 Caixa</button>
     </nav>
@@ -140,8 +199,118 @@
 
     <!-- ====================== NOVO CONTRATO ====================== -->
     <section class="panel-section active" id="section-novo-contrato">
-      <!-- todo conteúdo que você já tinha permanece -->
-      (todo o conteúdo original foi mantido aqui exatamente como estava)
+
+      <div class="card-new">
+        <h3 class="card-title">Dados do Cliente</h3>
+
+        <form id="contractForm">
+          <div class="form-grid-2">
+
+            <div class="form-item">
+              <label>Nome completo</label>
+              <input type="text" id="clienteNome">
+            </div>
+
+            <div class="form-item">
+              <label>CPF</label>
+              <input type="text" id="clienteCpf">
+            </div>
+
+            <div class="form-item">
+              <label>Identidade</label>
+              <input type="text" id="clienteRg">
+            </div>
+
+            <div class="form-item">
+              <label>Telefone (WhatsApp)</label>
+              <input type="text" id="clienteTelefone">
+            </div>
+
+            <div class="form-item full">
+              <label>Endereço completo</label>
+              <input type="text" id="clienteEndereco">
+            </div>
+
+            <div class="form-item">
+              <label>Cidade</label>
+              <input type="text" id="clienteCidade">
+            </div>
+
+            <div class="form-item">
+              <label>Estado</label>
+              <input type="text" id="clienteEstado" maxlength="2">
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- DADOS DO CONTRATO -->
+      <div class="card-new">
+        <h3 class="card-title">Dados do Contrato</h3>
+
+        <div class="form-grid-3">
+
+          <div class="form-item">
+            <label>Valor emprestado (R$)</label>
+            <input type="number" id="valorEmprestimo">
+          </div>
+
+          <div class="form-item">
+            <label>Porcentagem (%)</label>
+            <input type="number" id="percentual">
+          </div>
+
+          <div class="form-item">
+            <label>Qtd. parcelas</label>
+            <input type="number" id="quantParcelas">
+          </div>
+
+        </div>
+
+        <div class="form-item full">
+          <label>Tipo de juros</label>
+          <select id="tipoJuros" class="select">
+            <option value="total">Percentual sobre o valor total</option>
+            <option value="diario_total">Percentual por dias (fixo sobre o total)</option>
+          </select>
+        </div>
+
+        <div class="form-item full" id="diasJurosGroup">
+          <label>Dias do contrato (uma parcela por dia)</label>
+          <input type="number" id="diasJuros" placeholder="Ex: 3, 10, 20...">
+        </div>
+
+        <div class="action-row">
+          <button class="btn-secondary" id="btnGerarParcelas">Gerar parcelas</button>
+          <button class="btn-secondary" id="btnAdicionarParcela">Adicionar manual</button>
+        </div>
+
+        <div id="parcelListWrapper" class="parcel-box"></div>
+
+        <div class="action-row">
+          <button class="btn-primary full" id="btnSalvarContrato">Salvar contrato</button>
+        </div>
+      </div>
+
+      <!-- DOCUMENTOS E ENVIO -->
+      <div class="card-new">
+        <h3 class="card-title">Documentos e envio</h3>
+
+        <label class="upload-label">Importar documentos</label>
+        <input type="file" id="docsUpload" multiple class="upload-input">
+        <div id="docsList" class="docs-list"></div>
+
+        <label class="upload-label" style="margin-top:14px;">Enviar para motoboy</label>
+        <select id="motoboySelect" class="select">
+          <option value="">Selecione um motoboy</option>
+        </select>
+
+        <div class="action-row">
+          <button class="btn-secondary full" id="btnVerContratoGerado">Visualizar contrato</button>
+          <button class="btn-primary full" id="btnEnviarMotoboy">Enviar contrato</button>
+        </div>
+      </div>
     </section>
 
     <!-- ====================== CLIENTES ====================== -->
@@ -154,18 +323,19 @@
 
     <!-- ====================== RENOVAÇÃO ====================== -->
     <section class="panel-section" id="section-renovacao">
-
       <div class="card-new">
         <h3 class="card-title">Renovação de Contrato</h3>
 
         <div class="form-item full">
           <label>Buscar cliente por CPF</label>
-          <input type="text" id="renovacaoCpf" placeholder="Digite o CPF..." />
+          <input type="text" id="renovacaoCpf" placeholder="Digite o CPF do cliente...">
         </div>
 
-        <button class="btn-secondary" id="btnBuscarRenovacao">Buscar</button>
+        <div class="action-row">
+          <button class="btn-secondary" id="btnBuscarRenovacao">Buscar</button>
+        </div>
 
-        <div id="renovacaoDados" style="margin-top:20px; display:none;">
+        <div id="renovacaoDados" style="margin-top:18px; display:none;">
           <h4>Dados do Cliente</h4>
 
           <p><strong>Nome:</strong> <span id="renCliNome"></span></p>
@@ -176,29 +346,27 @@
           <p><strong>Cidade:</strong> <span id="renCliCidade"></span></p>
           <p><strong>Estado:</strong> <span id="renCliEstado"></span></p>
 
-          <hr style="margin:18px 0;">
+          <hr style="margin:14px 0;">
 
-          <label class="upload-label">Anexar Documentos</label>
+          <label class="upload-label">Anexar documentos para renovação</label>
           <input type="file" id="renDocsUpload" multiple class="upload-input">
           <div id="renDocsList" class="docs-list"></div>
 
-          <hr style="margin:18px 0;">
-
-          <button class="btn-primary full" id="btnGerarPedidoRenovacao">Gerar Pedido</button>
+          <div class="action-row" style="margin-top:16px;">
+            <button class="btn-primary full" id="btnGerarPedidoRenovacao">Gerar pedido de renovação</button>
+          </div>
         </div>
       </div>
 
-      <!-- Seleção de funcionário -->
-      <div class="card-new" id="renovacaoFuncionarios" style="display:none; margin-top:20px;">
+      <div class="card-new" id="renovacaoFuncionarios" style="display:none; margin-top:16px;">
         <h3 class="card-title">Enviar renovação para funcionário</h3>
 
         <div id="listaFuncionariosRenovacao"></div>
 
-        <div class="action-row" style="margin-top:16px;">
-          <button class="btn-primary full" id="btnEnviarRenovacao" disabled>Enviar Renovação</button>
+        <div class="action-row" style="margin-top:12px;">
+          <button class="btn-primary full" id="btnEnviarRenovacao" disabled>Enviar renovação</button>
         </div>
       </div>
-
     </section>
 
     <!-- ====================== ENVIOS ====================== -->
@@ -216,36 +384,180 @@
   <!-- JS ORIGINAL -->
   <script src="../js/caixa.js"></script>
 
-  <!-- JS Navegação extra (não altera caixa.js) -->
+  <!-- LOGOUT -->
   <script>
-    document.querySelectorAll(".menu-item").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const target = btn.getAttribute("data-section");
-
-        document.querySelectorAll(".menu-item").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        document.querySelectorAll(".panel-section").forEach(sec => {
-          sec.classList.remove("active");
-          if (sec.id === "section-" + target) sec.classList.add("active");
-        });
-
-        const map = {
-          "novo-contrato": ["Novo Contrato", "Cadastro completo de cliente e contrato."],
-          "clientes": ["Clientes", "Lista de clientes cadastrados."],
-          "renovacao": ["Renovação", "Criar pedido de renovação baseado no cliente."],
-          "envios": ["Envios", "Envios realizados ao motoboy."]
-        };
-
-        document.getElementById("mainTitle").textContent = map[target][0];
-        document.querySelector(".panel-desc").textContent = map[target][1];
-      });
+    document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+      localStorage.removeItem("financeApp_currentUser");
+      window.location.href = "/index.html";
     });
   </script>
 
-  <!-- REAPROVEITAR CONTRATO -->
+  <!-- 🔥 SCRIPT NOVO: REAPROVEITAR CONTRATO + TABELA SIMPLIFICADA -->
   <script>
-    (todo o seu bloco de reaproveitar contrato permanece igual)
+    function renderClientesTable() {
+      const div = document.getElementById("clientesList");
+      const clientes = JSON.parse(localStorage.getItem("financeApp_clientes") || "[]");
+
+      if (!clientes.length) {
+        div.innerHTML = "<p>Nenhum cliente cadastrado ainda.</p>";
+        return;
+      }
+
+      let html = `
+        <table class="table-list">
+          <thead>
+            <tr><th>Nome</th><th>Cidade</th><th>Ações</th></tr>
+          </thead>
+          <tbody>
+      `;
+
+      clientes.forEach((c, index) => {
+        html += `
+          <tr>
+            <td>${c.nome}</td>
+            <td>${c.cidade}</td>
+            <td>
+              <button class="btn-small" onclick="reaproveitarContrato(${index})">Reaproveitar</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += "</tbody></table>";
+      div.innerHTML = html;
+    }
+
+    function reaproveitarContrato(clienteIndex) {
+      const clientes = JSON.parse(localStorage.getItem("financeApp_clientes") || "[]");
+      const contratos = JSON.parse(localStorage.getItem("financeApp_contracts") || "[]" );
+
+      const cliente = clientes[clienteIndex];
+
+      const contratosCliente = contratos
+        .filter(c => c.clienteIndex === clienteIndex)
+        .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
+
+      const ultimo = contratosCliente[0];
+
+      if (!ultimo) {
+        alert("Nenhum contrato anterior encontrado.");
+        return;
+      }
+
+      document.getElementById("clienteNome").value = cliente.nome;
+      document.getElementById("clienteCpf").value = cliente.cpf;
+      document.getElementById("clienteRg").value = cliente.rg;
+      document.getElementById("clienteTelefone").value = cliente.telefone;
+      document.getElementById("clienteEndereco").value = cliente.endereco;
+      document.getElementById("clienteCidade").value = cliente.cidade;
+      document.getElementById("clienteEstado").value = cliente.estado;
+
+      document.getElementById("valorEmprestimo").value = ultimo.valorEmprestimo;
+      document.getElementById("percentual").value = ultimo.percentual;
+      document.getElementById("quantParcelas").value = ultimo.quantParcelas;
+      document.getElementById("tipoJuros").value = ultimo.tipoJuros;
+
+      if (ultimo.tipoJuros === "diario_total") {
+        document.getElementById("diasJuros").value = ultimo.diasJuros;
+      }
+
+      const wrapper = document.getElementById("parcelListWrapper");
+      wrapper.innerHTML = "";
+
+      ultimo.parcelas.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "parcel-row";
+        div.innerHTML = `
+          <input type="date" class="parcela-data" value="${p.data}">
+          <input type="number" class="parcela-valor" step="0.01" value="${p.valor}">
+          <button type="button" class="btn-small-danger" onclick="this.parentElement.remove()">X</button>
+        `;
+        wrapper.appendChild(div);
+      });
+
+      alert("Contrato reaproveitado com sucesso!");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderClientesTable();
+    });
+  </script>
+
+  <!-- DROPDOWN CLIENTES + NAVEGAÇÃO RENOVAÇÃO -->
+  <script>
+    (function() {
+      const btnClientes = document.getElementById("btnClientes");
+      const submenu = document.getElementById("submenu-clientes");
+
+      if (!btnClientes || !submenu) return;
+
+      function toggleDropdown() {
+        submenu.style.display = submenu.style.display === "flex" ? "none" : "flex";
+      }
+
+      // Intercepta clique em Clientes antes do caixa.js
+      btnClientes.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === "function") {
+          e.stopImmediatePropagation();
+        }
+        toggleDropdown();
+      }, true);
+
+      // Fecha dropdown ao clicar fora
+      document.addEventListener("click", function(e) {
+        if (!submenu.contains(e.target) && e.target !== btnClientes) {
+          submenu.style.display = "none";
+        }
+      });
+
+      function setHeaderFor(key) {
+        const map = {
+          "novo-contrato": [
+            "Novo Contrato",
+            "Cadastro completo de cliente, contrato, documentos e envio ao motoboy."
+          ],
+          "clientes": [
+            "Clientes",
+            "Lista de clientes cadastrados."
+          ],
+          "renovacao": [
+            "Renovação",
+            "Criar pedido de renovação com base em um cliente já cadastrado."
+          ],
+          "envios": [
+            "Envios",
+            "Envios ao motoboy."
+          ]
+        };
+        const cfg = map[key];
+        if (!cfg) return;
+        const h2 = document.getElementById("mainTitle");
+        const p = document.querySelector(".panel-desc");
+        if (h2) h2.textContent = cfg[0];
+        if (p) p.textContent = cfg[1];
+      }
+
+      function showSection(suffix) {
+        const id = "section-" + suffix;
+        document.querySelectorAll(".panel-section").forEach(sec => {
+          sec.classList.toggle("active", sec.id === id);
+        });
+        setHeaderFor(suffix);
+      }
+
+      // Ações do submenu
+      submenu.querySelectorAll("button[data-sub]").forEach(btn => {
+        btn.addEventListener("click", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const destino = this.getAttribute("data-sub");
+          submenu.style.display = "none";
+          showSection(destino);
+        });
+      });
+    })();
   </script>
 
   <!-- SCRIPT RENOVAÇÃO -->
