@@ -199,6 +199,7 @@ function gerarParcelasAutomaticas() {
 
   showToast("Parcelas geradas.");
 }
+
 /* =========================================================
    COLETAR PARCELAS
    ========================================================= */
@@ -425,16 +426,164 @@ function enviarContratoMotoboy() {
 
 
 /* =========================================================
-   TABELAS (Clientes e Envios)
+   TABELAS (Clientes e Envios) + STATUS + RENOVAR + COBRANÇA
    ========================================================= */
+function getStatusInfoForCliente(clienteIndex) {
+  const contratos = loadFromStorage(STORAGE_CONTRACTS);
+  const contratosCliente = contratos.filter(c => c.clienteIndex === clienteIndex);
 
-function renderClientesTable() {
-  const div = document.getElementById("clientesList");
+  if (!contratosCliente.length) {
+    return { label: "Sem contrato", cssClass: "status-badge status-sem-contrato" };
+  }
+
+  let ultimaData = null;
+
+  contratosCliente.forEach(c => {
+    if (Array.isArray(c.parcelas) && c.parcelas.length) {
+      const datasOrdenadas = c.parcelas
+        .map(p => p.data)
+        .filter(Boolean)
+        .sort();
+
+      const ultima = datasOrdenadas[datasOrdenadas.length - 1];
+      if (ultima) {
+        const d = new Date(ultima + "T00:00:00");
+        if (!ultimaData || d > ultimaData) {
+          ultimaData = d;
+        }
+      }
+    }
+  });
+
+  if (!ultimaData) {
+    return { label: "Sem parcelas", cssClass: "status-badge status-sem-contrato" };
+  }
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const diffMs = ultimaData.getTime() - hoje.getTime();
+  const diffDias = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDias < 0) {
+    return { label: "Vencido", cssClass: "status-badge status-vencido" };
+  } else if (diffDias <= 7) {
+    return { label: "Próximo do vencimento", cssClass: "status-badge status-proximo" };
+  } else {
+    return { label: "Em andamento", cssClass: "status-badge status-andamento" };
+  }
+}
+
+function renovarContrato(clienteIndex) {
   const clientes = loadFromStorage(STORAGE_CLIENTES);
   const contratos = loadFromStorage(STORAGE_CONTRACTS);
 
+  const cliente = clientes[clienteIndex];
+  if (!cliente) {
+    showToast("Cliente não encontrado.");
+    return;
+  }
+
+  const contratosCliente = contratos
+    .filter(c => c.clienteIndex === clienteIndex)
+    .sort((a, b) => new Date(b.criadoEm || 0) - new Date(a.criadoEm || 0));
+
+  const ultimo = contratosCliente[0];
+  if (!ultimo) {
+    showToast("Nenhum contrato anterior encontrado.");
+    return;
+  }
+
+  const btnMenuNovo = document.querySelector('.menu-item[data-section="novo-contrato"]');
+  if (btnMenuNovo) {
+    btnMenuNovo.click();
+  }
+
+  const nomeEl = document.getElementById("clienteNome");
+  if (!nomeEl) return;
+
+  document.getElementById("clienteNome").value = cliente.nome || "";
+  document.getElementById("clienteCpf").value = cliente.cpf || "";
+  document.getElementById("clienteRg").value = cliente.rg || "";
+  document.getElementById("clienteTelefone").value = cliente.telefone || "";
+  document.getElementById("clienteEndereco").value = cliente.endereco || "";
+  document.getElementById("clienteCidade").value = cliente.cidade || "";
+  document.getElementById("clienteEstado").value = cliente.estado || "";
+
+  document.getElementById("valorEmprestimo").value = ultimo.valorEmprestimo || "";
+  document.getElementById("percentual").value = ultimo.percentual || "";
+  document.getElementById("quantParcelas").value = ultimo.quantParcelas || "";
+  document.getElementById("tipoJuros").value = ultimo.tipoJuros || "total";
+
+  if (ultimo.tipoJuros === "diario_total" && document.getElementById("diasJuros")) {
+    document.getElementById("diasJuros").value = ultimo.diasJuros || "";
+  }
+
+  if (typeof setupTipoJurosBehavior === "function") {
+    setupTipoJurosBehavior();
+  }
+
+  const wrapper = document.getElementById("parcelListWrapper");
+  if (wrapper) {
+    wrapper.innerHTML = "";
+    (ultimo.parcelas || []).forEach(p => {
+      addParcelRow(wrapper, {
+        data: p.data,
+        valor: p.valor
+      });
+    });
+  }
+
+  showToast("Dados do último contrato carregados para renovação.");
+}
+
+function cobrarCliente(clienteIndex) {
+  const clientes = loadFromStorage(STORAGE_CLIENTES);
+  const cliente = clientes[clienteIndex];
+  if (!cliente) {
+    showToast("Cliente não encontrado.");
+    return;
+  }
+
+  if (!cliente.telefone) {
+    showToast("Telefone do cliente não cadastrado.");
+    return;
+  }
+
+  const statusInfo = getStatusInfoForCliente(clienteIndex);
+
+  let mensagem = `Olá, ${cliente.nome}! Tudo bem? `;
+  if (statusInfo.label === "Vencido") {
+    mensagem += "Identificamos que o seu contrato está vencido. Podemos falar sobre a regularização ou renovação?";
+  } else if (statusInfo.label === "Próximo do vencimento") {
+    mensagem += "Seu contrato está próximo do vencimento. Gostaria de conversar sobre o pagamento ou uma possível renovação?";
+  } else if (statusInfo.label === "Em andamento") {
+    mensagem += "Passando para lembrar sobre o seu contrato em andamento e me deixar à disposição para qualquer dúvida.";
+  } else {
+    mensagem += "Estou entrando em contato sobre o seu cadastro em nosso sistema.";
+  }
+
+  let phone = String(cliente.telefone || "").replace(/\D/g, "");
+  if (!phone) {
+    showToast("Telefone do cliente inválido.");
+    return;
+  }
+
+  if (!phone.startsWith("55") && (phone.length === 10 || phone.length === 11)) {
+    phone = "55" + phone;
+  }
+
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, "_blank");
+}
+
+function renderClientesTable() {
+  const div = document.getElementById("clientesList");
+  if (!div) return;
+
+  const clientes = loadFromStorage(STORAGE_CLIENTES);
+
   if (!clientes.length) {
-    div.innerHTML = "<p>Nenhum cliente cadastrado ainda.</p>";
+    div.innerHTML = "<p>Nenhum cliente ainda.</p>";
     return;
   }
 
@@ -444,63 +593,27 @@ function renderClientesTable() {
         <tr>
           <th>Nome</th>
           <th>CPF</th>
+          <th>Cidade</th>
+          <th>Telefone</th>
           <th>Status</th>
-          <th style="text-align:center;">Ações</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
   `;
 
-  clientes.forEach(cliente => {
-    const contratosCliente = contratos
-      .filter(c => clientes[c.clienteIndex]?.cpf === cliente.cpf)
-      .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
-
-    let statusTxt = "Sem contrato";
-    let statusColor = "#e5e7eb";
-
-    if (contratosCliente.length) {
-      const ultimo = contratosCliente[0];
-      const datas = ultimo.parcelas.map(p => new Date(p.data));
-      const ultimaData = datas.sort((a, b) => b - a)[0];
-
-      const hoje = new Date();
-      const diff = Math.ceil((ultimaData - hoje) / (1000 * 60 * 60 * 24));
-
-      if (diff < 0) {
-        statusTxt = "Vencido";
-        statusColor = "#fee2e2";
-      } else if (diff <= 3) {
-        statusTxt = "Próximo do vencimento";
-        statusColor = "#fef9c3";
-      } else {
-        statusTxt = "Em andamento";
-        statusColor = "#d1fae5";
-      }
-    }
-
+  clientes.forEach((c, index) => {
+    const statusInfo = getStatusInfoForCliente(index);
     html += `
       <tr>
-        <td>${cliente.nome}</td>
-        <td>${cliente.cpf}</td>
+        <td>${c.nome || ""}</td>
+        <td>${c.cpf || ""}</td>
+        <td>${c.cidade || ""}</td>
+        <td>${c.telefone || ""}</td>
+        <td><span class="${statusInfo.cssClass}">${statusInfo.label}</span></td>
         <td>
-          <span style="
-            background:${statusColor};
-            padding:4px 10px;
-            border-radius:6px;
-            font-size:0.75rem;
-            display:inline-block;
-          ">
-            ${statusTxt}
-          </span>
-        </td>
-        <td style="text-align:center;">
-          <button class="btn-small" style="margin-right:4px;" onclick="renovarContrato('${cliente.cpf}')">
-            🔄 Renovar
-          </button>
-          <button class="btn-small" style="background:#25D366;color:white;" onclick="realizarCobranca('${cliente.telefone}', '${cliente.nome}')">
-            🟢 WhatsApp
-          </button>
+          <button class="btn-small" onclick="renovarContrato(${index})">Renovar</button>
+          <button class="btn-small" style="margin-left:4px;" onclick="cobrarCliente(${index})">Cobrança</button>
         </td>
       </tr>
     `;
@@ -508,74 +621,6 @@ function renderClientesTable() {
 
   html += "</tbody></table>";
   div.innerHTML = html;
-}
-
-function renovarContrato(cpf) {
-  const clientes = loadFromStorage(STORAGE_CLIENTES);
-  const contratos = loadFromStorage(STORAGE_CONTRACTS);
-
-  const cliente = clientes.find(c => c.cpf === cpf);
-  if (!cliente) {
-    alert("Cliente não encontrado.");
-    return;
-  }
-
-  const contratosCliente = contratos
-    .filter(c => clientes[c.clienteIndex]?.cpf === cpf)
-    .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
-
-  const ultimo = contratosCliente[0];
-  if (!ultimo) {
-    alert("Este cliente ainda não possui contrato salvo.");
-    return;
-  }
-
-  document.getElementById("clienteNome").value = cliente.nome;
-  document.getElementById("clienteCpf").value = cliente.cpf;
-  document.getElementById("clienteRg").value = cliente.rg;
-  document.getElementById("clienteTelefone").value = cliente.telefone;
-  document.getElementById("clienteEndereco").value = cliente.endereco;
-  document.getElementById("clienteCidade").value = cliente.cidade;
-  document.getElementById("clienteEstado").value = cliente.estado;
-
-  document.getElementById("valorEmprestimo").value = ultimo.valorEmprestimo;
-  document.getElementById("percentual").value = ultimo.percentual;
-  document.getElementById("quantParcelas").value = ultimo.quantParcelas;
-  document.getElementById("tipoJuros").value = ultimo.tipoJuros;
-
-  if (ultimo.tipoJuros === "diario_total") {
-    document.getElementById("diasJuros").value = ultimo.diasJuros;
-  }
-
-  const wrapper = document.getElementById("parcelListWrapper");
-  wrapper.innerHTML = "";
-
-  (ultimo.parcelas || []).forEach(p => {
-    const div = document.createElement("div");
-    div.className = "parcel-row";
-    div.innerHTML = `
-      <input type="date" class="parcela-data" value="${p.data}">
-      <input type="number" class="parcela-valor" value="${p.valor}">
-      <button type="button" class="btn-small-danger" onclick="this.parentElement.remove()">X</button>
-    `;
-    wrapper.appendChild(div);
-  });
-
-  showToast("Contrato carregado para renovação.");
-}
-
-function realizarCobranca(telefone, nome) {
-  if (!telefone) {
-    alert("Cliente sem telefone cadastrado.");
-    return;
-  }
-
-  const msg = encodeURIComponent(
-    `Olá ${nome}! 😊\nEstou passando para lembrar sobre a pendência do seu contrato. Posso te ajudar com algo?`
-  );
-
-  const link = `https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`;
-  window.open(link, "_blank");
 }
 
 function renderEnviosTable() {
@@ -673,7 +718,7 @@ function visualizarUltimoContrato() {
 
   .linha-assinatura {
     width: 260px;
-    height: 40px;           /* espaço visual pra assinatura */
+    height: 40px;
     margin: 0 auto 8px auto;
     border-bottom: 1px solid #111;
   }
@@ -717,6 +762,7 @@ function visualizarUltimoContrato() {
 
   win.document.close();
 }
+
 /* =========================================================
    SISTEMA - ON LOAD
    ========================================================= */
@@ -761,7 +807,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderEnviosTable();
 
   setupTipoJurosBehavior();
-
 
   document.getElementById("btnLogoutHeader").addEventListener("click", () => {
     localStorage.removeItem(STORAGE_CURRENT_USER);
