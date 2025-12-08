@@ -1,4 +1,3 @@
-
 const TOKEN_MASTER = "91710983";
 const STORAGE_USERS_KEY = "financeApp_users";
 const STORAGE_CURRENT_USER = "financeApp_currentUser";
@@ -41,20 +40,40 @@ function createDefaultAdminIfNeeded() {
   }
 }
 
+/* ============================================================
+   ROTEAMENTO POR CARGO — ADICIONADO: FICHEIRO
+============================================================ */
 function routeByRole(role) {
+
   if (role === "caixa") {
     window.location.href = "caixa/caixa.html";
-  } else if (role === "motoboy") {
+  } 
+  
+  else if (role === "ficheiro") { 
+    // 👈 NOVO CARGO REDIRECIONA PARA O NOVO PAINEL
+    window.location.href = "ficha/ficha.html"; 
+  }
+
+  else if (role === "motoboy") {
     window.location.href = "motoboy/motoboy.html";
-  } else if (role === "gerencia") {
+  } 
+
+  else if (role === "gerencia") {
     window.location.href = "gerencia/gerencia.html";
-  } else if (role === "chefe") {
+  } 
+
+  else if (role === "chefe") {
     window.location.href = "chefe/chefe.html";
-  } else {
+  } 
+
+  else {
     alert("Cargo sem painel definido.");
   }
 }
 
+/* ============================================================
+   LOGIN + MODAIS + CRIAÇÃO DE USUÁRIO
+============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
   createDefaultAdminIfNeeded();
 
@@ -89,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // modais
+  // ===== MODAIS =====
   function openModal(id) {
     const el = document.getElementById(id);
     if (el) el.classList.add("active");
@@ -121,17 +140,18 @@ document.addEventListener("DOMContentLoaded", () => {
     btnChangePassword.addEventListener("click", () => openModal("modalChangePassword"));
   }
 
-  // criar usuário
+  // ===== CRIAR NOVO USUÁRIO =====
   const createUserForm = document.getElementById("createUserForm");
   if (createUserForm) {
     createUserForm.addEventListener("submit", (e) => {
       e.preventDefault();
+
       const name = document.getElementById("newName").value.trim();
       const cpf = document.getElementById("newCpf").value.trim();
       const email = document.getElementById("newEmail").value.trim().toLowerCase();
       const password = document.getElementById("newPassword").value;
       const confirm = document.getElementById("newPasswordConfirm").value;
-      const role = document.getElementById("newRole").value;
+      const role = document.getElementById("newRole").value;  // FICHEIRO JÁ APARECE NO SELECT
       const token = document.getElementById("newToken").value.trim();
       const msgEl = document.getElementById("createUserMessage");
 
