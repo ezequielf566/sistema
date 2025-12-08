@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device=device-width, initial-scale=1.0">
   <title>Painel do Caixa</title>
 
   <link rel="stylesheet" href="../css/style.css">
@@ -70,7 +70,6 @@
       font-size: 0.75rem;
       border-radius: 10px;
       white-space: nowrap;
-      cursor: pointer;
     }
 
     .panel-main {
@@ -87,65 +86,6 @@
     .panel-header p {
       margin-top: 4px !important;
       margin-bottom: 16px !important;
-    }
-
-    /* Wrapper do botão Clientes + dropdown */
-    .menu-clientes-wrapper {
-      position: relative;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .menu-clientes-wrapper > .menu-item {
-      width: 100%;
-    }
-
-    /* Dropdown profissional de Clientes */
-    #submenu-clientes {
-      position: absolute;
-      top: 40px;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
-      display: none;
-      flex-direction: column;
-      padding: 6px 0;
-      z-index: 1200;
-    }
-
-    #submenu-clientes button {
-      background: transparent;
-      border: none;
-      padding: 9px 14px;
-      text-align: left;
-      font-size: 0.8rem;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    #submenu-clientes button:hover {
-      background: #f1f5f9;
-    }
-
-    /* Itens de funcionário na renovação */
-    .func-item {
-      padding: 10px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .func-item span.func-role {
-      font-size: 0.75rem;
-      opacity: 0.7;
     }
   </style>
 </head>
@@ -174,16 +114,7 @@
   <aside class="sidebar-new">
     <nav class="sidebar-menu">
       <button class="menu-item active" data-section="novo-contrato">📄 Contratos</button>
-
-      <!-- Wrapper Clientes + submenu -->
-      <div class="menu-clientes-wrapper">
-        <button class="menu-item" id="btnClientes" data-section="clientes">👥 Clientes ▾</button>
-        <div id="submenu-clientes">
-          <button type="button" data-sub="clientes">Ver Clientes</button>
-          <button type="button" data-sub="renovacao">Renovação</button>
-        </div>
-      </div>
-
+      <button class="menu-item" data-section="clientes">👥 Clientes</button>
       <button class="menu-item" data-section="envios">📤 Envios</button>
       <button class="menu-item disabled">🔒 Caixa</button>
     </nav>
@@ -321,54 +252,6 @@
       </div>
     </section>
 
-    <!-- ====================== RENOVAÇÃO ====================== -->
-    <section class="panel-section" id="section-renovacao">
-      <div class="card-new">
-        <h3 class="card-title">Renovação de Contrato</h3>
-
-        <div class="form-item full">
-          <label>Buscar cliente por CPF</label>
-          <input type="text" id="renovacaoCpf" placeholder="Digite o CPF do cliente...">
-        </div>
-
-        <div class="action-row">
-          <button class="btn-secondary" id="btnBuscarRenovacao">Buscar</button>
-        </div>
-
-        <div id="renovacaoDados" style="margin-top:18px; display:none;">
-          <h4>Dados do Cliente</h4>
-
-          <p><strong>Nome:</strong> <span id="renCliNome"></span></p>
-          <p><strong>CPF:</strong> <span id="renCliCpf"></span></p>
-          <p><strong>RG:</strong> <span id="renCliRg"></span></p>
-          <p><strong>Telefone:</strong> <span id="renCliTelefone"></span></p>
-          <p><strong>Endereço:</strong> <span id="renCliEndereco"></span></p>
-          <p><strong>Cidade:</strong> <span id="renCliCidade"></span></p>
-          <p><strong>Estado:</strong> <span id="renCliEstado"></span></p>
-
-          <hr style="margin:14px 0;">
-
-          <label class="upload-label">Anexar documentos para renovação</label>
-          <input type="file" id="renDocsUpload" multiple class="upload-input">
-          <div id="renDocsList" class="docs-list"></div>
-
-          <div class="action-row" style="margin-top:16px;">
-            <button class="btn-primary full" id="btnGerarPedidoRenovacao">Gerar pedido de renovação</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card-new" id="renovacaoFuncionarios" style="display:none; margin-top:16px;">
-        <h3 class="card-title">Enviar renovação para funcionário</h3>
-
-        <div id="listaFuncionariosRenovacao"></div>
-
-        <div class="action-row" style="margin-top:12px;">
-          <button class="btn-primary full" id="btnEnviarRenovacao" disabled>Enviar renovação</button>
-        </div>
-      </div>
-    </section>
-
     <!-- ====================== ENVIOS ====================== -->
     <section class="panel-section" id="section-envios">
       <div class="card-new">
@@ -482,86 +365,6 @@
       renderClientesTable();
     });
   </script>
-
-  <!-- DROPDOWN CLIENTES + NAVEGAÇÃO RENOVAÇÃO -->
-  <script>
-    (function() {
-      const btnClientes = document.getElementById("btnClientes");
-      const submenu = document.getElementById("submenu-clientes");
-
-      if (!btnClientes || !submenu) return;
-
-      function toggleDropdown() {
-        submenu.style.display = submenu.style.display === "flex" ? "none" : "flex";
-      }
-
-      // Intercepta clique em Clientes antes do caixa.js
-      btnClientes.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (typeof e.stopImmediatePropagation === "function") {
-          e.stopImmediatePropagation();
-        }
-        toggleDropdown();
-      }, true);
-
-      // Fecha dropdown ao clicar fora
-      document.addEventListener("click", function(e) {
-        if (!submenu.contains(e.target) && e.target !== btnClientes) {
-          submenu.style.display = "none";
-        }
-      });
-
-      function setHeaderFor(key) {
-        const map = {
-          "novo-contrato": [
-            "Novo Contrato",
-            "Cadastro completo de cliente, contrato, documentos e envio ao motoboy."
-          ],
-          "clientes": [
-            "Clientes",
-            "Lista de clientes cadastrados."
-          ],
-          "renovacao": [
-            "Renovação",
-            "Criar pedido de renovação com base em um cliente já cadastrado."
-          ],
-          "envios": [
-            "Envios",
-            "Envios ao motoboy."
-          ]
-        };
-        const cfg = map[key];
-        if (!cfg) return;
-        const h2 = document.getElementById("mainTitle");
-        const p = document.querySelector(".panel-desc");
-        if (h2) h2.textContent = cfg[0];
-        if (p) p.textContent = cfg[1];
-      }
-
-      function showSection(suffix) {
-        const id = "section-" + suffix;
-        document.querySelectorAll(".panel-section").forEach(sec => {
-          sec.classList.toggle("active", sec.id === id);
-        });
-        setHeaderFor(suffix);
-      }
-
-      // Ações do submenu
-      submenu.querySelectorAll("button[data-sub]").forEach(btn => {
-        btn.addEventListener("click", function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          const destino = this.getAttribute("data-sub");
-          submenu.style.display = "none";
-          showSection(destino);
-        });
-      });
-    })();
-  </script>
-
-  <!-- SCRIPT RENOVAÇÃO -->
-  <script src="../js/renovacao.js"></script>
 
 </body>
 </html>
