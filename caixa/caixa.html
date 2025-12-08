@@ -16,8 +16,6 @@
       background: #f5f7fb;
     }
 
-    /* ======================= BOTÃO SAIR TOPBAR ======================= */
-
     #btnLogoutHeader {
       background: #fef2f2;
       border: 1px solid #fecaca;
@@ -34,8 +32,6 @@
       background: #ffe1e1;
     }
 
-    /* ======================= TAMPA DO MENU ======================= */
-
     .menu-filler {
       width: 100%;
       height: 26px;
@@ -44,8 +40,6 @@
       top: 56px;
       z-index: 998;
     }
-
-    /* ======================= MENU FIXO SUPERIOR ======================= */
 
     .sidebar-new {
       position: sticky;
@@ -78,8 +72,6 @@
       white-space: nowrap;
     }
 
-    /* ======================= CONTEÚDO ======================= */
-
     .panel-main {
       padding: 14px;
       margin-top: 36px !important;
@@ -94,12 +86,6 @@
     .panel-header p {
       margin-top: 4px !important;
       margin-bottom: 16px !important;
-    }
-
-    @media (max-width: 900px) {
-      .panel-main {
-        margin-top: 42px !important;
-      }
     }
   </style>
 </head>
@@ -124,7 +110,7 @@
   <!-- FILLER DO MENU -->
   <div class="menu-filler"></div>
 
-  <!-- MENU SUPERIOR FIXO -->
+  <!-- MENU SUPERIOR -->
   <aside class="sidebar-new">
     <nav class="sidebar-menu">
       <button class="menu-item active" data-section="novo-contrato">📄 Contratos</button>
@@ -145,7 +131,6 @@
     <!-- ====================== NOVO CONTRATO ====================== -->
     <section class="panel-section active" id="section-novo-contrato">
 
-      <!-- DADOS DO CLIENTE -->
       <div class="card-new">
         <h3 class="card-title">Dados do Cliente</h3>
 
@@ -214,23 +199,19 @@
 
         </div>
 
-        <!-- NOVOS CAMPOS DE JUROS -->
         <div class="form-item full">
           <label>Tipo de juros</label>
           <select id="tipoJuros" class="select">
             <option value="total">Percentual sobre o valor total</option>
             <option value="diario_total">Percentual por dias (fixo sobre o total)</option>
-            
           </select>
         </div>
 
         <div class="form-item full" id="diasJurosGroup">
-          <label>Dias do contrato (para contrato em dias)</label>
+          <label>Dias do contrato (uma parcela por dia)</label>
           <input type="number" id="diasJuros" placeholder="Ex: 3, 10, 20...">
-          <small style="font-size:0.78rem;color:#6b7280;">Usado apenas no contrato em dias (uma parcela por dia).</small>
         </div>
 
-        <!-- GERAR PARCELAS -->
         <div class="action-row">
           <button class="btn-secondary" id="btnGerarParcelas">Gerar parcelas</button>
           <button class="btn-secondary" id="btnAdicionarParcela">Adicionar manual</button>
@@ -239,7 +220,7 @@
         <div id="parcelListWrapper" class="parcel-box"></div>
 
         <div class="action-row">
-          <button class="btn-primary full" id="btnSalvarContrato">Salvar contrato (sem enviar)</button>
+          <button class="btn-primary full" id="btnSalvarContrato">Salvar contrato</button>
         </div>
       </div>
 
@@ -281,10 +262,9 @@
 
   </main>
 
-  <!-- TOAST -->
   <div class="toast" id="toast"><span id="toastMessage">Ação realizada.</span></div>
 
-  <!-- JS -->
+  <!-- JS ORIGINAL -->
   <script src="../js/caixa.js"></script>
 
   <!-- LOGOUT -->
@@ -292,6 +272,97 @@
     document.getElementById("btnLogoutHeader").addEventListener("click", () => {
       localStorage.removeItem("financeApp_currentUser");
       window.location.href = "/index.html";
+    });
+  </script>
+
+  <!-- 🔥 SCRIPT NOVO: REAPROVEITAR CONTRATO + TABELA SIMPLIFICADA -->
+  <script>
+    function renderClientesTable() {
+      const div = document.getElementById("clientesList");
+      const clientes = JSON.parse(localStorage.getItem("financeApp_clientes") || "[]");
+
+      if (!clientes.length) {
+        div.innerHTML = "<p>Nenhum cliente cadastrado ainda.</p>";
+        return;
+      }
+
+      let html = `
+        <table class="table-list">
+          <thead>
+            <tr><th>Nome</th><th>Cidade</th><th>Ações</th></tr>
+          </thead>
+          <tbody>
+      `;
+
+      clientes.forEach((c, index) => {
+        html += `
+          <tr>
+            <td>${c.nome}</td>
+            <td>${c.cidade}</td>
+            <td>
+              <button class="btn-small" onclick="reaproveitarContrato(${index})">Reaproveitar</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += "</tbody></table>";
+      div.innerHTML = html;
+    }
+
+    function reaproveitarContrato(clienteIndex) {
+      const clientes = JSON.parse(localStorage.getItem("financeApp_clientes") || "[]");
+      const contratos = JSON.parse(localStorage.getItem("financeApp_contracts") || "[]" );
+
+      const cliente = clientes[clienteIndex];
+
+      const contratosCliente = contratos
+        .filter(c => c.clienteIndex === clienteIndex)
+        .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
+
+      const ultimo = contratosCliente[0];
+
+      if (!ultimo) {
+        alert("Nenhum contrato anterior encontrado.");
+        return;
+      }
+
+      document.getElementById("clienteNome").value = cliente.nome;
+      document.getElementById("clienteCpf").value = cliente.cpf;
+      document.getElementById("clienteRg").value = cliente.rg;
+      document.getElementById("clienteTelefone").value = cliente.telefone;
+      document.getElementById("clienteEndereco").value = cliente.endereco;
+      document.getElementById("clienteCidade").value = cliente.cidade;
+      document.getElementById("clienteEstado").value = cliente.estado;
+
+      document.getElementById("valorEmprestimo").value = ultimo.valorEmprestimo;
+      document.getElementById("percentual").value = ultimo.percentual;
+      document.getElementById("quantParcelas").value = ultimo.quantParcelas;
+      document.getElementById("tipoJuros").value = ultimo.tipoJuros;
+
+      if (ultimo.tipoJuros === "diario_total") {
+        document.getElementById("diasJuros").value = ultimo.diasJuros;
+      }
+
+      const wrapper = document.getElementById("parcelListWrapper");
+      wrapper.innerHTML = "";
+
+      ultimo.parcelas.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "parcel-row";
+        div.innerHTML = `
+          <input type="date" class="parcela-data" value="${p.data}">
+          <input type="number" class="parcela-valor" step="0.01" value="${p.valor}">
+          <button type="button" class="btn-small-danger" onclick="this.parentElement.remove()">X</button>
+        `;
+        wrapper.appendChild(div);
+      });
+
+      alert("Contrato reaproveitado com sucesso!");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderClientesTable();
     });
   </script>
 
