@@ -197,6 +197,7 @@
           <label>Tipo de juros</label>
           <select id="tipoJuros">
             <option value="total">Percentual sobre o valor total</option>
+            <option value="mensal">Percentual mensal</option>
             <option value="diario_total">Percentual por dias</option>
           </select>
         </div>
@@ -228,6 +229,7 @@
 
         <div class="action-row" style="margin-top:14px;">
           <button class="btn-secondary full" id="btnVerContratoGerado">Visualizar contrato</button>
+          <button class="btn-primary full" id="btnEnviarMotoboy">Enviar contrato</button>
         </div>
       </div>
 
@@ -264,7 +266,9 @@
   <!-- JS DE NAVEGAÇÃO + INICIALIZAÇÃO COMPLETA DO MENU CONTRATOS -->
   <script>
 
+    //-------------------------------------------------------
     // Alternância de seções
+    //-------------------------------------------------------
     const buttons = document.querySelectorAll(".menu-item[data-section]");
     const sections = document.querySelectorAll(".panel-section");
 
@@ -285,33 +289,51 @@
       });
     });
 
-    // INICIALIZAÇÃO COMPLETA DO MENU CONTRATOS (igual ao antigo)
+    //-------------------------------------------------------
+    // Inicialização completa do módulo de contratos
+    //-------------------------------------------------------
     function iniciarMenuContratos() {
+
       if (typeof setupDocsUpload === "function") setupDocsUpload();
       if (typeof setupTipoJurosBehavior === "function") setupTipoJurosBehavior();
+      if (typeof preencherMotoboys === "function") preencherMotoboys();
 
       const wrapper = document.getElementById("parcelListWrapper");
 
       document.getElementById("btnGerarParcelas").onclick = gerarParcelasAutomaticas;
 
-      document.getElementById("btnAdicionarParcela").onclick = () => {
+      document.getElementById("btnAdicionarParcela").onclick = () =>
         addParcelRow(wrapper);
+
+      document.getElementById("btnSalvarContrato").onclick = () =>
+        handleContractSave();
+
+      document.getElementById("btnVerContratoGerado").onclick = () => {
+        const contrato = handleContractSave();
+        if (contrato) visualizarContrato(contrato);
       };
 
-      document.getElementById("btnSalvarContrato").onclick = salvarContrato;
-
-      document.getElementById("btnVerContratoGerado").onclick = visualizarContrato;
+      document.getElementById("btnEnviarMotoboy").onclick = () => {
+        const contrato = handleContractSave();
+        if (contrato) enviarContratoMotoboy(contrato.id);
+      };
     }
 
-    // CHAMAR AO ABRIR A PÁGINA
+    //-------------------------------------------------------
+    // Chamar ao abrir a página
+    //-------------------------------------------------------
     window.addEventListener("DOMContentLoaded", iniciarMenuContratos);
 
-    // CHAMAR QUANDO CLICAR NO MENU CONTRATOS
+    //-------------------------------------------------------
+    // Chamar sempre que clicar no menu Contratos
+    //-------------------------------------------------------
     document
       .querySelector('[data-section="novo-contrato"]')
       .addEventListener("click", iniciarMenuContratos);
 
-    // LOGOUT
+    //-------------------------------------------------------
+    // Logout
+    //-------------------------------------------------------
     document.getElementById("btnLogoutHeader").addEventListener("click", () => {
       localStorage.removeItem("financeApp_currentUser");
       window.location.href = "/index.html";
