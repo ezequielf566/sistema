@@ -535,15 +535,27 @@ function visualizarUltimoContrato() {
       <title>Contrato</title>
       <style>
         @page { size: A4; margin: 20mm; }
-        body { font-family: Arial, sans-serif; margin:0; padding: 20px; position:relative; min-height:100%; }
-        .header { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
-        .header-logo { width:80px; }
-        table { width:100%; border-collapse:collapse; }
-        th,td { border:1px solid #ccc; padding:6px; font-size:13px; }
-        th { background:#eee; }
-        .multa { margin-top:16px; font-size:12px; }
-        .assinatura-area { position:absolute; left:0; right:0; bottom:40px; text-align:center; padding-top:40px; }
-        .linha-assinatura { width:260px; margin:0 auto 4px auto; border-top:1px solid #111; }
+  body { font-family: Arial, sans-serif; margin:0; padding: 20px; position:relative; min-height:100%; }
+  .header { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+  .header-logo { width:80px; }
+  table { width:100%; border-collapse:collapse; }
+  th,td { border:1px solid #ccc; padding:6px; font-size:13px; }
+  th { background:#eee; }
+  .multa { margin-top:16px; font-size:12px; }
+
+  /* 🔥 NOVO CSS DA ASSINATURA, NO FINAL E COM ESPAÇO PRA ASSINAR 🔥 */
+  .assinatura-area {
+    margin-top: 80px;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+
+  .linha-assinatura {
+    width: 260px;
+    height: 40px;           /* espaço visual pra assinatura */
+    margin: 0 auto 8px auto;
+    border-bottom: 1px solid #111;
+  }
       </style>
     </head>
     <body>
