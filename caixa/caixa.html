@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device=device-width, initial-scale=1.0">
+  <title>Painel do Caixa</title>
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    html, body {
+      overflow-x: hidden;
+      max-width: 100%;
+      font-family: "Inter", sans-serif;
+      background: #f5f7fb;
+    }
+
+    /* ======================= BOTÃO SAIR TOPBAR ======================= */
+
+    #btnLogoutHeader {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 14px;
+      border-radius: 10px;
+      transition: 0.2s ease;
+    }
+
+    #btnLogoutHeader:hover {
+      background: #ffe1e1;
+    }
+
+    /* ======================= TAMPA DO MENU ======================= */
+
+    .menu-filler {
+      width: 100%;
+      height: 26px;
+      background: #f5f7fb;
+      position: sticky;
+      top: 56px;
+      z-index: 998;
+    }
+
+    /* ======================= MENU FIXO SUPERIOR ======================= */
+
+    .sidebar-new {
+      position: sticky;
+      top: 82px !important;
+      z-index: 999 !important;
+      width: 100%;
+      padding: 8px 8px;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .sidebar-menu {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .sidebar-menu .menu-item {
+      flex: 1;
+      height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.75rem;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    /* ======================= CONTEÚDO ======================= */
+
+    .panel-main {
+      padding: 14px;
+      margin-top: 36px !important;
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-header {
+      margin-bottom: 22px !important;
+    }
+
+    .panel-header p {
+      margin-top: 4px !important;
+      margin-bottom: 16px !important;
+    }
+
+    @media (max-width: 900px) {
+      .panel-main {
+        margin-top: 42px !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="panel-body">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="../icons/logo.png" class="topbar-logo" alt="Logo">
+      <div class="topbar-info">
+        <div class="topbar-title">Sistema Financeiro</div>
+        <div style="font-size:0.8rem;opacity:.85;">Painel do Caixa</div>
+      </div>
+    </div>
+
+    <div class="topbar-user">
+      <button id="btnLogoutHeader">Sair</button>
+    </div>
+  </header>
+
+  <!-- FILLER DO MENU -->
+  <div class="menu-filler"></div>
+
+  <!-- MENU SUPERIOR FIXO -->
+  <aside class="sidebar-new">
+    <nav class="sidebar-menu">
+      <button class="menu-item active" data-section="novo-contrato">📄 Contratos</button>
+      <button class="menu-item" data-section="clientes">👥 Clientes</button>
+      <button class="menu-item" data-section="envios">📤 Envios</button>
+      <button class="menu-item disabled">🔒 Caixa</button>
+    </nav>
+  </aside>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="panel-main">
+
+    <div class="panel-header">
+      <h2 id="mainTitle">Novo Contrato</h2>
+      <p class="panel-desc">Cadastro completo de cliente, contrato, documentos e envio ao motoboy.</p>
+    </div>
+
+    <!-- ====================== NOVO CONTRATO ====================== -->
+    <section class="panel-section active" id="section-novo-contrato">
+
+      <!-- DADOS DO CLIENTE -->
+      <div class="card-new">
+        <h3 class="card-title">Dados do Cliente</h3>
+
+        <form id="contractForm">
+          <div class="form-grid-2">
+
+            <div class="form-item">
+              <label>Nome completo</label>
+              <input type="text" id="clienteNome">
+            </div>
+
+            <div class="form-item">
+              <label>CPF</label>
+              <input type="text" id="clienteCpf">
+            </div>
+
+            <div class="form-item">
+              <label>Identidade</label>
+              <input type="text" id="clienteRg">
+            </div>
+
+            <div class="form-item">
+              <label>Telefone (WhatsApp)</label>
+              <input type="text" id="clienteTelefone">
+            </div>
+
+            <div class="form-item full">
+              <label>Endereço completo</label>
+              <input type="text" id="clienteEndereco">
+            </div>
+
+            <div class="form-item">
+              <label>Cidade</label>
+              <input type="text" id="clienteCidade">
+            </div>
+
+            <div class="form-item">
+              <label>Estado</label>
+              <input type="text" id="clienteEstado" maxlength="2">
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- DADOS DO CONTRATO -->
+      <div class="card-new">
+        <h3 class="card-title">Dados do Contrato</h3>
+
+        <div class="form-grid-3">
+
+          <div class="form-item">
+            <label>Valor emprestado (R$)</label>
+            <input type="number" id="valorEmprestimo">
+          </div>
+
+          <div class="form-item">
+            <label>Porcentagem (%)</label>
+            <input type="number" id="percentual">
+          </div>
+
+          <div class="form-item">
+            <label>Qtd. parcelas</label>
+            <input type="number" id="quantParcelas">
+          </div>
+
+        </div>
+
+        <!-- NOVOS CAMPOS DE JUROS -->
+        <div class="form-item full">
+          <label>Tipo de juros</label>
+          <select id="tipoJuros" class="select">
+            <option value="total">Percentual sobre o valor total</option>
+            <option value="mensal">Percentual mensal (por parcela)</option>
+            <option value="total_dias">Percentual sobre o valor total (contrato em dias)</option>
+          </select>
+        </div>
+
+        <div class="form-item full" id="diasJurosGroup">
+          <label>Dias do contrato (para contratos em dias)</label>
+          <input type="number" id="diasJuros" placeholder="Ex: 14, 20, 33...">
+          <small style="font-size:0.78rem;color:#6b7280;">Usado apenas quando o tipo de juros for "contrato em dias".</small>
+        </div>
+
+        <!-- GERAR PARCELAS -->
+        <div class="action-row">
+          <button class="btn-secondary" id="btnGerarParcelas">Gerar parcelas</button>
+          <button class="btn-secondary" id="btnAdicionarParcela">Adicionar manual</button>
+        </div>
+
+        <div id="parcelListWrapper" class="parcel-box"></div>
+
+        <div class="action-row">
+          <button class="btn-primary full" id="btnSalvarContrato">Salvar contrato (sem enviar)</button>
+        </div>
+      </div>
+
+      <!-- DOCUMENTOS E ENVIO -->
+      <div class="card-new">
+        <h3 class="card-title">Documentos e envio</h3>
+
+        <label class="upload-label">Importar documentos</label>
+        <input type="file" id="docsUpload" multiple class="upload-input">
+        <div id="docsList" class="docs-list"></div>
+
+        <label class="upload-label" style="margin-top:14px;">Enviar para motoboy</label>
+        <select id="motoboySelect" class="select">
+          <option value="">Selecione um motoboy</option>
+        </select>
+
+        <div class="action-row">
+          <button class="btn-secondary full" id="btnVerContratoGerado">Visualizar contrato</button>
+          <button class="btn-primary full" id="btnEnviarMotoboy">Enviar contrato</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== CLIENTES ====================== -->
+    <section class="panel-section" id="section-clientes">
+      <div class="card-new">
+        <h3 class="card-title">Clientes cadastrados</h3>
+        <div id="clientesList"></div>
+      </div>
+    </section>
+
+    <!-- ====================== ENVIOS ====================== -->
+    <section class="panel-section" id="section-envios">
+      <div class="card-new">
+        <h3 class="card-title">Envios ao Motoboy</h3>
+        <div id="enviosList"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><span id="toastMessage">Ação realizada.</span></div>
+
+  <!-- JS -->
+  <script src="../js/caixa.js"></script>
+
+  <!-- LOGOUT -->
+  <script>
+    document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+      localStorage.removeItem("financeApp_currentUser");
+      window.location.href = "/index.html";
+    });
+  </script>
+
+</body>
+</html>
