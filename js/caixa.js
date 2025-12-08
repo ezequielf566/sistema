@@ -140,7 +140,7 @@ function gerarParcelasAutomaticas() {
 
   let valorParcela = 0;
 
-  // === JUROS SOBRE VALOR TOTAL (independente de parcelas) ===
+  // === JUROS SOBRE VALOR TOTAL (independente de dias) ===
   if (tipoJuros === "total") {
     const totalComJuros = valor + (valor * (percentual / 100));
     valorParcela = totalComJuros / qtd;
@@ -152,24 +152,13 @@ function gerarParcelasAutomaticas() {
     valorParcela = base + (base * (percentual / 100));
   }
 
-  // === JUROS POR DIAS - FIXO SOBRE O VALOR TOTAL ===
-  else if (tipoJuros === "diario_total") {
+  // === CONTRATO EM DIAS (JUROS TOTAL, USANDO DIAS PARA CALENDÁRIO) ===
+  else if (tipoJuros === "total_dias") {
     if (!diasJuros || diasJuros <= 0) {
       showToast("Informe a quantidade de dias do contrato.");
       return;
     }
     const totalComJuros = valor + (valor * (percentual / 100));
-    valorParcela = totalComJuros / qtd;
-  }
-
-  // === JUROS POR DIAS - PROPORCIONAL (percentual ao dia) ===
-  else if (tipoJuros === "diario_prop") {
-    if (!diasJuros || diasJuros <= 0) {
-      showToast("Informe a quantidade de dias do contrato.");
-      return;
-    }
-    const fator = 1 + (percentual / 100) * diasJuros;
-    const totalComJuros = valor * fator;
     valorParcela = totalComJuros / qtd;
   }
 
@@ -179,11 +168,12 @@ function gerarParcelasAutomaticas() {
     const d = new Date(hoje);
     let offsetDias = 0;
 
-    // Contratos por dias: primeira parcela após "diasJuros", demais a cada 30 dias
-    if ((tipoJuros === "diario_total" || tipoJuros === "diario_prop") && diasJuros > 0) {
-      offsetDias = diasJuros + (30 * i);
+    if (tipoJuros === "total_dias") {
+      // Espalha as parcelas ao longo do total de dias (ex: 20 dias e 4 parcelas: 5, 10, 15, 20)
+      const passo = diasJuros / qtd;
+      offsetDias = Math.round(passo * (i + 1));
     } else {
-      // Contratos mensais / sobre valor total: sempre de 30 em 30 dias
+      // Demais contratos: primeira parcela em 30 dias, depois a cada 30
       offsetDias = 30 * (i + 1);
     }
 
@@ -271,7 +261,11 @@ function handleContractSave() {
     return null;
   }
 
-  const parcelas = collectParcelas();
+  let parcelas = collectParcelas();
+  if (!parcelas.length) {
+    gerarParcelasAutomaticas();
+    parcelas = collectParcelas();
+  }
   const docs = collectDocs();
 
   /* === Salvar cliente ================================= */
@@ -328,6 +322,11 @@ function preencherMotoboys() {
 
   let users = loadFromStorage(STORAGE_USERS_KEY);
   let mts = users.filter(u => u.role === "motoboy");
+
+  if (!mts.length) {
+    select.innerHTML = `<option value="">Nenhum motoboy cadastrado</option>`;
+    return;
+  }
 
   select.innerHTML = `<option value="">Selecione um motoboy</option>`;
   mts.forEach(m => {
@@ -444,17 +443,12 @@ function renderEnviosTable() {
    VISUALIZAR CONTRATO (PDF)
    ========================================================= */
 function visualizarUltimoContrato() {
-  let id = localStorage.getItem(STORAGE_LAST_CONTRACT_ID);
-
-  // Se ainda não houver contrato salvo, tenta salvar um novo com os dados atuais
-  if (!id) {
-    const novoContrato = handleContractSave();
-    if (!novoContrato) {
-      // handleContractSave já mostra o motivo (campos obrigatórios)
-      return;
-    }
-    id = String(novoContrato.id);
+  const novoContrato = handleContractSave();
+  if (!novoContrato) {
+    // handleContractSave já mostra o motivo (campos obrigatórios)
+    return;
   }
+  const id = String(novoContrato.id);
 
   const contratos = loadFromStorage(STORAGE_CONTRACTS);
   const contrato = contratos.find(c => String(c.id) === id);
@@ -481,15 +475,13 @@ function visualizarUltimoContrato() {
     `;
   }
 
-  let tipoLabel = "";
+    let tipoLabel = "";
   if (contrato.tipoJuros === "total") {
     tipoLabel = "Percentual sobre o valor total";
   } else if (contrato.tipoJuros === "mensal") {
     tipoLabel = "Percentual mensal por parcela";
-  } else if (contrato.tipoJuros === "diario_total") {
-    tipoLabel = `Percentual por dias (fixo sobre o valor total) — ${contrato.percentual}%`;
-  } else if (contrato.tipoJuros === "diario_prop") {
-    tipoLabel = `Percentual por dias (proporcional) — ${contrato.percentual}% em ${contrato.diasJuros} dias`;
+  } else if (contrato.tipoJuros === "total_dias") {
+    tipoLabel = `Percentual sobre o valor total (contrato em dias) — ${contrato.percentual}% em ${contrato.diasJuros} dias`;
   }
 
   const parcelasTextoMulta =
@@ -503,13 +495,13 @@ function visualizarUltimoContrato() {
       <title>Contrato</title>
       <style>
         @page { size: A4; margin: 20mm; }
-        body { font-family: Arial, sans-serif; padding: 20px; display:flex; flex-direction:column; height:100%; }
+        body { font-family: Arial, sans-serif; margin:0; padding: 20px; position:relative; min-height:100%; }
         .header { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
         .header-logo { width:80px; }
         table { width:100%; border-collapse:collapse; }
         th,td { border:1px solid #ccc; padding:6px; font-size:13px; }
         th { background:#eee; }
-        .assinatura-area { margin-top:auto; text-align:center; padding-top:40px; }
+        .assinatura-area { position:absolute; left:0; right:0; bottom:40px; text-align:center; }
         .linha-assinatura { width:260px; margin:0 auto; border-top:1px solid #111; }
         .multa { margin-top:12px; font-size:12px; }
       </style>
@@ -563,7 +555,7 @@ function setupTipoJurosBehavior() {
   if (!select || !diasGroup || !diasInput) return;
 
   function update() {
-    const usarDias = select.value === "diario_total" || select.value === "diario_prop";
+    const usarDias = select.value === "total_dias";
     diasInput.disabled = !usarDias;
     diasGroup.style.opacity = usarDias ? "1" : "0.6";
   }
