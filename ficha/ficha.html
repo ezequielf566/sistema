@@ -88,8 +88,8 @@
       margin-bottom: 16px !important;
     }
   </style>
-</head>
 
+</head>
 <body class="panel-body">
 
   <!-- TOPBAR -->
@@ -107,7 +107,7 @@
     </div>
   </header>
 
-  <!-- FILLER DO MENU -->
+  <!-- FILLER -->
   <div class="menu-filler"></div>
 
   <!-- MENU SUPERIOR -->
@@ -133,7 +133,6 @@
 
       <div class="card-new">
         <h3 class="card-title">Dados do Cliente</h3>
-
         <form id="contractForm">
           <div class="form-grid-2">
 
@@ -209,7 +208,7 @@
 
         <div class="form-item full" id="diasJurosGroup">
           <label>Dias do contrato (uma parcela por dia)</label>
-          <input type="number" id="diasJuros" placeholder="Ex: 3, 10, 20...">
+          <input type="number" id="diasJuros">
         </div>
 
         <div class="action-row">
@@ -249,7 +248,6 @@
       <div class="card-new">
         <h3 class="card-title">Clientes cadastrados</h3>
 
-        <!-- Campo de busca usado pelo clientes.js -->
         <input
           type="text"
           id="clienteSearchInput"
@@ -258,10 +256,7 @@
           style="margin-bottom:14px;width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;"
         >
 
-        <!-- Lista de clientes agrupados por cidade / CPF (renderizada pelo clientes.js) -->
         <div id="clientesResultado"></div>
-
-        <!-- Detalhes dos contratos do cliente selecionado -->
         <div id="clienteContratosDetalhes" style="margin-top:20px;"></div>
       </div>
     </section>
@@ -278,10 +273,8 @@
 
   <div class="toast" id="toast"><span id="toastMessage">Ação realizada.</span></div>
 
-  <!-- JS PRINCIPAL DOS CONTRATOS (salva em contratos_clientes) -->
+  <!-- MÓDULOS PRINCIPAIS -->
   <script src="../js/contratos.js"></script>
-
-  <!-- MENU CLIENTES — usa a mesma base contratos_clientes -->
   <script src="../js/clientes.js"></script>
 
   <!-- LOGOUT -->
@@ -290,6 +283,42 @@
       localStorage.removeItem("financeApp_currentUser");
       window.location.href = "/index.html";
     });
+  </script>
+
+  <!-- ⭐ SCRIPT DE TROCA DE ABAS -->
+  <script>
+    document.querySelectorAll(".menu-item").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".menu-item").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const section = btn.getAttribute("data-section");
+
+        document.querySelectorAll(".panel-section").forEach(sec => {
+          sec.classList.remove("active");
+          sec.style.display = "none";
+        });
+
+        const target = document.getElementById(`section-${section}`);
+        if (target) {
+          target.style.display = "block";
+          target.classList.add("active");
+        }
+
+        const titleMap = {
+          "novo-contrato": "Novo Contrato",
+          "clientes": "Clientes",
+          "envios": "Envios ao Motoboy"
+        };
+        const titleEl = document.getElementById("mainTitle");
+        if (titleEl && titleMap[section]) {
+          titleEl.textContent = titleMap[section];
+        }
+      });
+    });
+
+    document.querySelectorAll(".panel-section").forEach(sec => sec.style.display = "none");
+    document.getElementById("section-novo-contrato").style.display = "block";
   </script>
 
 </body>
