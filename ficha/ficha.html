@@ -345,16 +345,13 @@
   <div class="card-new">
     <h3 class="card-title">Clientes</h3>
 
-    <!-- Submenu: Buscar / Pagamentos -->
     <div class="clientes-submenu">
       <button class="subtab-item active" data-cliente-tab="buscar">Buscar cliente</button>
       <button class="subtab-item" data-cliente-tab="pagamentos">Pagamentos</button>
     </div>
 
-    <!-- TAB BUSCAR CLIENTE -->
     <div id="clientesTabBuscar" class="cliente-tab active">
 
-      <!-- Campo de busca -->
       <div class="clientes-search-bar">
         <input
           type="text"
@@ -362,15 +359,12 @@
           placeholder="Buscar por nome, CPF ou cidade...">
       </div>
 
-      <!-- Lista de clientes -->
       <div id="clientesResultado" class="clientes-agrupado"></div>
 
-      <!-- Detalhes dos contratos do cliente -->
       <div id="clienteContratosDetalhes" class="cliente-contratos-card"></div>
 
     </div>
 
-    <!-- TAB PAGAMENTOS -->
     <div id="clientesTabPagamentos" class="cliente-tab">
       <p style="opacity:.7; font-size:.85rem; padding:4px 0;">
         Módulo de pagamentos em desenvolvimento.
@@ -408,7 +402,7 @@
   <script>
 
     //-------------------------------------------------------
-    // Alternância de seções do menu superior
+    // Alternância de seções
     //-------------------------------------------------------
     const buttons = document.querySelectorAll(".menu-item[data-section]");
     const sections = document.querySelectorAll(".panel-section");
@@ -445,7 +439,7 @@
     });
 
     //-------------------------------------------------------
-    // Inicialização completa do módulo Contratos
+    // Inicializar menu Contratos
     //-------------------------------------------------------
     function iniciarMenuContratos() {
       if (typeof setupDocsUpload === "function") setupDocsUpload();
@@ -496,6 +490,22 @@
         });
       });
     });
+
+    //-------------------------------------------------------
+    // Inicializar módulo Clientes ao abrir a aba Clientes
+    //-------------------------------------------------------
+    function iniciarMenuClientes() {
+      if (typeof loadContratosClientes === "function") {
+        cacheContratos = loadContratosClientes();
+      }
+      if (typeof renderClientesLista === "function") {
+        renderClientesLista("");
+      }
+    }
+
+    document
+      .querySelector('[data-section="clientes"]')
+      .addEventListener("click", iniciarMenuClientes);
 
     //-------------------------------------------------------
     // Logout
