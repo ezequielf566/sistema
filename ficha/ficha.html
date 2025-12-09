@@ -83,6 +83,111 @@
     .panel-section.active {
       display: block;
     }
+
+    /* ---------- Clientes: submenu e layout ---------- */
+
+    .clientes-submenu {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .clientes-submenu .subtab-item {
+      flex: 1;
+      height: 32px;
+      border-radius: 999px;
+      border: none;
+      background: #e5e7eb;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .clientes-submenu .subtab-item.active {
+      background: #dbeafe;
+      color: #1e3a8a;
+    }
+
+    .cliente-tab {
+      display: none;
+    }
+
+    .cliente-tab.active {
+      display: block;
+    }
+
+    .clientes-search-bar {
+      margin-bottom: 12px;
+    }
+
+    .clientes-search-bar input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 0.85rem;
+    }
+
+    .clientes-agrupado {
+      margin-top: 8px;
+    }
+
+    .clientes-cidade-titulo {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 12px 0 4px;
+    }
+
+    .cliente-linha {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e5e7eb;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+
+    .cliente-linha .btn-small {
+      white-space: nowrap;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: none;
+      background: #e0f2fe;
+      cursor: pointer;
+    }
+
+    .cliente-contratos-card {
+      margin-top: 16px;
+    }
+
+    .cliente-contrato-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e5e7eb;
+      font-size: 0.85rem;
+    }
+
+    .cliente-contrato-row .btn-small {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-primary-small {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
   </style>
 </head>
 
@@ -235,21 +340,54 @@
 
     </section>
 
-    <!-- ====================== CLIENTES (VAZIO) ====================== -->
-    <section class="panel-section" id="section-clientes">
-      <div class="card-new" style="padding:40px; text-align:center; opacity:.6;">
-        Nenhum módulo disponível.
-      </div>
-    </section>
+    <!-- ====================== CLIENTES ====================== -->
+<section class="panel-section" id="section-clientes">
+  <div class="card-new">
+    <h3 class="card-title">Clientes</h3>
 
-    <!-- ====================== ENVIOS (VAZIO) ====================== -->
+    <!-- Submenu: Buscar / Pagamentos -->
+    <div class="clientes-submenu">
+      <button class="subtab-item active" data-cliente-tab="buscar">Buscar cliente</button>
+      <button class="subtab-item" data-cliente-tab="pagamentos">Pagamentos</button>
+    </div>
+
+    <!-- TAB BUSCAR CLIENTE -->
+    <div id="clientesTabBuscar" class="cliente-tab active">
+
+      <!-- Campo de busca -->
+      <div class="clientes-search-bar">
+        <input
+          type="text"
+          id="clienteSearchInput"
+          placeholder="Buscar por nome, CPF ou cidade...">
+      </div>
+
+      <!-- Lista de clientes -->
+      <div id="clientesResultado" class="clientes-agrupado"></div>
+
+      <!-- Detalhes dos contratos do cliente -->
+      <div id="clienteContratosDetalhes" class="cliente-contratos-card"></div>
+
+    </div>
+
+    <!-- TAB PAGAMENTOS -->
+    <div id="clientesTabPagamentos" class="cliente-tab">
+      <p style="opacity:.7; font-size:.85rem; padding:4px 0;">
+        Módulo de pagamentos em desenvolvimento.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+    <!-- ====================== ENVIOS ====================== -->
     <section class="panel-section" id="section-envios">
       <div class="card-new" style="padding:40px; text-align:center; opacity:.6;">
         Nenhum módulo disponível.
       </div>
     </section>
 
-    <!-- ====================== CAIXA (VAZIO) ====================== -->
+    <!-- ====================== CAIXA ====================== -->
     <section class="panel-section" id="section-caixa">
       <div class="card-new" style="padding:40px; text-align:center; opacity:.6;">
         Módulo Caixa ainda não disponível.
@@ -263,11 +401,14 @@
   <!-- JS PRINCIPAL DO CONTRATO -->
   <script src="../js/contratos.js"></script>
 
-  <!-- JS DE NAVEGAÇÃO + INICIALIZAÇÃO COMPLETA DO MENU CONTRATOS -->
+  <!-- JS DO MENU CLIENTES -->
+  <script src="../js/clientes.js"></script>
+
+  <!-- JS DO INDEX -->
   <script>
 
     //-------------------------------------------------------
-    // Alternância de seções
+    // Alternância de seções do menu superior
     //-------------------------------------------------------
     const buttons = document.querySelectorAll(".menu-item[data-section]");
     const sections = document.querySelectorAll(".panel-section");
@@ -284,16 +425,29 @@
           if (sec.id === "section-" + target) sec.classList.add("active");
         });
 
-        document.getElementById("mainTitle").textContent =
-          target === "novo-contrato" ? "Novo Contrato" : btn.textContent;
+        const mainTitle = document.getElementById("mainTitle");
+        const desc = document.querySelector(".panel-desc");
+
+        if (target === "novo-contrato") {
+          mainTitle.textContent = "Novo Contrato";
+          desc.textContent = "Cadastro completo de cliente, contrato, documentos e impressão.";
+        } else if (target === "clientes") {
+          mainTitle.textContent = "Clientes";
+          desc.textContent = "Busque clientes e visualize seus contratos.";
+        } else if (target === "envios") {
+          mainTitle.textContent = "Envios";
+          desc.textContent = "Módulo de envios em desenvolvimento.";
+        } else if (target === "caixa") {
+          mainTitle.textContent = "Caixa";
+          desc.textContent = "Módulo Caixa ainda não disponível.";
+        }
       });
     });
 
     //-------------------------------------------------------
-    // Inicialização completa do módulo de contratos
+    // Inicialização completa do módulo Contratos
     //-------------------------------------------------------
     function iniciarMenuContratos() {
-
       if (typeof setupDocsUpload === "function") setupDocsUpload();
       if (typeof setupTipoJurosBehavior === "function") setupTipoJurosBehavior();
       if (typeof preencherMotoboys === "function") preencherMotoboys();
@@ -319,17 +473,29 @@
       };
     }
 
-    //-------------------------------------------------------
-    // Chamar ao abrir a página
-    //-------------------------------------------------------
     window.addEventListener("DOMContentLoaded", iniciarMenuContratos);
 
     //-------------------------------------------------------
-    // Chamar sempre que clicar no menu Contratos
+    // Submenu Clientes
     //-------------------------------------------------------
-    document
-      .querySelector('[data-section="novo-contrato"]')
-      .addEventListener("click", iniciarMenuContratos);
+    const clienteTabsButtons = document.querySelectorAll(".subtab-item[data-cliente-tab]");
+    const clienteTabs = {
+      buscar: document.getElementById("clientesTabBuscar"),
+      pagamentos: document.getElementById("clientesTabPagamentos")
+    };
+
+    clienteTabsButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tab = btn.getAttribute("data-cliente-tab");
+
+        clienteTabsButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        Object.keys(clienteTabs).forEach(key => {
+          clienteTabs[key].classList.toggle("active", key === tab);
+        });
+      });
+    });
 
     //-------------------------------------------------------
     // Logout
