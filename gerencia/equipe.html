@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipe – Painel da Gerência</title>
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: #f5f7fb;
+      margin: 0;
+      font-family: "Inter", sans-serif;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      background: white;
+      padding: 16px 22px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    #btnLogoutHeader {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: .2s;
+    }
+
+    #btnLogoutHeader:hover { background: #fecaca; }
+
+    /* MENU LATERAL */
+    .sidebar {
+      width: 240px;
+      background: white;
+      border-right: 1px solid #e5e7eb;
+      height: 100vh;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      padding-top: 20px;
+    }
+
+    .menu-btn {
+      width: 100%;
+      padding: 14px 22px;
+      font-size: 0.95rem;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      color: #374151;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .menu-btn:hover { background: #f3f4f6; }
+    .menu-btn.active { background: #e0e7ff; color: #4338ca; }
+
+    /* CONTEÚDO */
+    .content {
+      margin-left: 260px;
+      padding: 22px;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 18px;
+    }
+
+    /* GRID DE FUNCIONÁRIOS */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .team-card {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .team-card:hover { transform: translateY(-3px); }
+
+    .team-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .team-role {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 14px;
+    }
+
+    .team-stats {
+      font-size: 0.85rem;
+      color: #374151;
+      line-height: 1.4rem;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPO -->
+  <header class="topbar">
+    <div class="topbar-title">Gerência — Equipe</div>
+    <button id="btnLogoutHeader">Sair</button>
+  </header>
+
+  <!-- MENU LATERAL -->
+  <aside class="sidebar">
+    <button class="menu-btn" onclick="location.href='index.html'">📊 Dashboard</button>
+    <button class="menu-btn active">👥 Equipe</button>
+    <button class="menu-btn" onclick="location.href='financeiro.html'">💸 Financeiro</button>
+    <button class="menu-btn" onclick="location.href='agenda.html'">📅 Agenda</button>
+    <button class="menu-btn" onclick="location.href='logs.html'">📝 Logs</button>
+    <button class="menu-btn" onclick="location.href='relatorios.html'">📁 Relatórios</button>
+    <button class="menu-btn" onclick="location.href='dados.html'">🔓 Dados</button>
+    <button class="menu-btn" onclick="location.href='configuracoes.html'">⚙️ Configurações</button>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="content">
+
+    <h2 class="section-title">Equipe Ativa</h2>
+
+    <div class="team-grid" id="teamContainer">
+      <!-- JS vai preencher os funcionários -->
+    </div>
+
+  </main>
+
+  <script src="../js/equipe.js"></script>
+
+  <!-- LOGOUT -->
+  <script>
+    document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+      localStorage.removeItem("financeApp_currentUser");
+      window.location.href = "../index.html";
+    });
+  </script>
+
+</body>
+</html>
