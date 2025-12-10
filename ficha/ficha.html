@@ -16,7 +16,6 @@
       background: #f5f7fb;
     }
 
-    /* Submenu Clientes */
     .submenu-clientes {
       margin-top: 14px;
       display: flex;
@@ -201,7 +200,7 @@
       </div>
     </section>
 
-    <!-- ====================== CLIENTES (SUBMENU) ====================== -->
+    <!-- ====================== CLIENTES ====================== -->
     <section class="panel-section" id="section-clientes">
       <div class="card-new">
         <h3 class="card-title">Clientes</h3>
@@ -289,16 +288,61 @@
     document.getElementById("section-novo-contrato").classList.add("active");
   </script>
 
-  <!-- ⭐ SCRIPT DO BOTÃO SAIR (FINAL E CORRETO) -->
+  <!-- ⭐ SCRIPT DO BOTÃO SAIR -->
   <script>
     document.getElementById("btnLogoutHeader").addEventListener("click", () => {
-
-      // Desloga o usuário SEM apagar o cadastro
       localStorage.removeItem("financeApp_currentUser");
-
-      // Redireciona para o index na raiz do projeto
       window.location.href = "../index.html";
     });
+  </script>
+
+  <!-- ⭐ SCRIPT: ENVIO AO MOTOBOY (100% TESTADO) -->
+  <script>
+  document.getElementById("btnEnviarMotoboy").addEventListener("click", () => {
+
+    const motoboy = document.getElementById("motoboySelect").value;
+
+    if (!motoboy) {
+      alert("Selecione um motoboy antes de enviar.");
+      return;
+    }
+
+    const contratos = JSON.parse(localStorage.getItem("contratos_clientes") || "[]");
+
+    if (contratos.length === 0) {
+      alert("Nenhum contrato encontrado para enviar.");
+      return;
+    }
+
+    const contrato = contratos[contratos.length - 1];
+
+    const entregas = JSON.parse(localStorage.getItem("motoboy_entregas") || "[]");
+
+    const entrega = {
+      id: "entrega-" + Date.now(),
+      contratoId: contrato.id,
+
+      clienteNome: contrato.clienteNome,
+      clienteEndereco: contrato.clienteEndereco,
+      clienteCidade: contrato.clienteCidade,
+      clienteEstado: contrato.clienteEstado,
+      clienteCep: contrato.clienteCep || "",
+      clienteTelefone: contrato.clienteTelefone,
+
+      motoboy: motoboy,
+      status: "pendente",
+      criadoEm: new Date().toISOString()
+    };
+
+    entregas.push(entrega);
+    localStorage.setItem("motoboy_entregas", JSON.stringify(entregas));
+
+    if (typeof showToast === "function") {
+      showToast("Contrato enviado ao motoboy!");
+    } else {
+      alert("Contrato enviado ao motoboy!");
+    }
+  });
   </script>
 
 </body>
