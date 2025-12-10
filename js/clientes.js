@@ -1,340 +1,207 @@
-// =======================================================
-// clientes.js — Menu Clientes (Buscar + Ver contratos)
-// SISTEMA 100% COMPATÍVEL COM contratos.js
-// =======================================================
+// ======================================================
+// CLIENTES.JS — Sistema de busca, listagem e renovação
+// ======================================================
 
-const STORAGE_CONTRATOS = "contratos_clientes";
+// Cache interno
 let cacheContratos = [];
+let debounceTimer = null;
 
-// -------------------------------------------------------
-// Helpers de storage
-// -------------------------------------------------------
-function loadContratosClientes() {
-  try {
-    const raw = localStorage.getItem(STORAGE_CONTRATOS);
-    if (!raw) return [];
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
+
+// ======================================================
+// 1. Carrega todos os contratos do storage oficial
+// ======================================================
+function carregarContratos() {
+  const data = localStorage.getItem("contratos_clientes");
+  cacheContratos = data ? JSON.parse(data) : [];
 }
 
-// -------------------------------------------------------
-// Agrupar por cidade → CPF → cliente
-// -------------------------------------------------------
-function agruparPorCidadeECliente(contratos) {
-  const mapa = {};
 
-  contratos.forEach(c => {
-    if (!c || !c.cliente) return;
+// ======================================================
+// 2. Agrupa clientes por CIDADE → CPF
+// ======================================================
+function agruparClientes(termoBusca = "") {
+  const grupos = {};
 
-    const cidade = (c.cliente.cidade || "Sem cidade").trim() || "Sem cidade";
-    const cpf = (c.cliente.cpf || "SEM CPF").trim() || "SEM CPF";
+  cacheContratos.forEach(contrato => {
+    if (!contrato.cliente) return;
 
-    if (!mapa[cidade]) mapa[cidade] = {};
-    if (!mapa[cidade][cpf]) {
-      mapa[cidade][cpf] = {
-        cliente: c.cliente,
-        contratos: []
-      };
+    const c = contrato.cliente;
+    const chaveCidade = c.cidade?.trim() || "Sem Cidade";
+    const chaveCPF = c.cpf?.trim() || "Sem CPF";
+
+    // Filtro de busca
+    const texto = termoBusca.toLowerCase();
+    if (
+      !c.nome?.toLowerCase().includes(texto) &&
+      !c.cpf?.toLowerCase().includes(texto) &&
+      !c.cidade?.toLowerCase().includes(texto)
+    ) {
+      return; // não corresponde à busca
     }
-    mapa[cidade][cpf].contratos.push(c);
+
+    // Criar grupo da cidade
+    if (!grupos[chaveCidade]) grupos[chaveCidade] = {};
+    // Criar grupo por CPF
+    if (!grupos[chaveCidade][chaveCPF]) grupos[chaveCidade][chaveCPF] = [];
+
+    grupos[chaveCidade][chaveCPF].push(contrato);
   });
 
-  return mapa;
+  return grupos;
 }
 
-// -------------------------------------------------------
-// Aplicar filtro (nome, cpf, cidade)
-// -------------------------------------------------------
-function obterClientesEstruturados(filtroTexto) {
-  const termo = (filtroTexto || "").toLowerCase().trim();
-  const agrupado = agruparPorCidadeECliente(cacheContratos);
-  const resultado = [];
 
-  Object.keys(agrupado)
-    .sort((a, b) => a.localeCompare(b))
-    .forEach(cidade => {
-      const mapaClientes = agrupado[cidade];
-      const clientesArr = Object.values(mapaClientes);
-
-      const filtrados = clientesArr.filter(item => {
-        const cli = item.cliente || {};
-
-        // AJUSTE 2 — garantir string sempre
-        const nome = String(cli.nome || "").toLowerCase();
-        const cpf = String(cli.cpf || "").toLowerCase();
-        const cid = String(cli.cidade || "").toLowerCase();
-
-        if (!termo) return true;
-        return (
-          nome.includes(termo) ||
-          cpf.includes(termo) ||
-          cid.includes(termo)
-        );
-      });
-
-      if (filtrados.length) {
-        resultado.push({
-          cidade,
-          clientes: filtrados.sort((a, b) => {
-            const n1 = String(a.cliente?.nome || "").toLowerCase();
-            const n2 = String(b.cliente?.nome || "").toLowerCase();
-            return n1.localeCompare(n2);
-          })
-        });
-      }
-    });
-
-  return resultado;
-}
-
-// -------------------------------------------------------
-// Render da lista de clientes por cidade
-// -------------------------------------------------------
-function renderClientesLista(filtroTexto) {
+// ======================================================
+// 3. Renderiza a LISTA DE CLIENTES na tela
+// ======================================================
+function renderizarClientes(grupos) {
   const container = document.getElementById("clientesResultado");
-  const detalhes = document.getElementById("clienteContratosDetalhes");
-  if (!container) return;
-
-  const grupos = obterClientesEstruturados(filtroTexto);
-
   container.innerHTML = "";
-  if (detalhes) detalhes.innerHTML = "";
 
-  if (!grupos.length) {
-    container.innerHTML = `<p style="opacity:.7;font-size:.85rem;">Nenhum cliente encontrado.</p>`;
+  const cidades = Object.keys(grupos);
+
+  if (cidades.length === 0) {
+    container.innerHTML = `
+      <p style="text-align:center;opacity:.7;margin-top:20px;">
+        Nenhum cliente encontrado.
+      </p>`;
     return;
   }
 
-  let html = "";
+  cidades.forEach(cidade => {
+    const blocoCidade = document.createElement("div");
+    blocoCidade.className = "city-block";
 
-  grupos.forEach(grupo => {
-    html += `<div class="clientes-cidade-bloco">`;
-    html += `<div class="clientes-cidade-titulo">${grupo.cidade}</div>`;
+    blocoCidade.innerHTML = `
+      <div class="city-title">${cidade}</div>
+    `;
 
-    grupo.clientes.forEach(item => {
-      const cli = item.cliente || {};
-      const qtdContratos = item.contratos.length;
-      const nomeExibicao = cli.nome || "Sem nome";
-      const cpfExibicao = cli.cpf ? ` (${cli.cpf})` : "";
+    const clientesDaCidade = grupos[cidade];
 
-      html += `
-        <div class="cliente-linha">
-          <span>${nomeExibicao}${cpfExibicao}</span>
-          <button
-            class="btn-small"
-            data-acao="ver-contratos"
-            data-cpf="${cli.cpf || ""}">
-            Ver contratos (${qtdContratos})
-          </button>
+    Object.keys(clientesDaCidade).forEach(cpf => {
+      const contratosDoCliente = clientesDaCidade[cpf];
+      const cliente = contratosDoCliente[0].cliente;
+
+      const card = document.createElement("div");
+      card.className = "client-item";
+
+      card.innerHTML = `
+        <div class="client-name">${cliente.nome}</div>
+        <div class="client-info">${cliente.cpf} • ${contratosDoCliente.length} contrato(s)</div>
+
+        <div class="btn-actions">
+          <button class="btn-view" onclick="verContratos('${cpf.replace(/[^0-9]/g,'')}')">Ver</button>
+          <button class="btn-renew" onclick="renovarCliente('${cpf.replace(/[^0-9]/g,'')}')">Renovar</button>
         </div>
       `;
+
+      blocoCidade.appendChild(card);
     });
 
-    html += `</div>`;
+    container.appendChild(blocoCidade);
   });
-
-  container.innerHTML = html;
 }
 
-// -------------------------------------------------------
-// Formatar datas (seguro mesmo se undefined)
-// -------------------------------------------------------
-function formatarDataHora(isoStr) {
-  if (!isoStr) return "";
-  const d = new Date(isoStr);
-  if (isNaN(d.getTime())) return "";
 
-  const dia = String(d.getDate()).padStart(2, "0");
-  const mes = String(d.getMonth() + 1).padStart(2, "0");
-  const ano = d.getFullYear();
-  const hora = String(d.getHours()).padStart(2, "0");
-  const min = String(d.getMinutes()).padStart(2, "0");
+// ======================================================
+// 4. MOSTRA OS CONTRATOS de um cliente
+// ======================================================
+function verContratos(cpfLimpo) {
+  const container = document.getElementById("clienteContratosDetalhes");
+  container.innerHTML = "";
 
-  return `${dia}/${mes}/${ano} ${hora}:${min}`;
-}
+  const lista = cacheContratos.filter(c =>
+    c.cliente?.cpf?.replace(/[^0-9]/g, "") === cpfLimpo
+  );
 
-// -------------------------------------------------------
-// Mostrar contratos do cliente
-// -------------------------------------------------------
-function mostrarContratosDoCliente(cpf) {
-  const detalhes = document.getElementById("clienteContratosDetalhes");
-  if (!detalhes) return;
-
-  const contratosCliente = cacheContratos
-    .filter(c => (c.cliente?.cpf || "") === cpf)
-    .sort((a, b) => {
-      const da = new Date(a.criadoEm || 0).getTime();
-      const db = new Date(b.criadoEm || 0).getTime();
-      return db - da;
-    });
-
-  if (!contratosCliente.length) {
-    detalhes.innerHTML = `<p style="opacity:.7;font-size:.85rem;">Nenhum contrato encontrado.</p>`;
+  if (!lista.length) {
+    container.innerHTML = "<p>Nenhum contrato encontrado.</p>";
     return;
   }
 
-  const cli = contratosCliente[0].cliente || {};
-  const nome = cli.nome || "Cliente";
-  const cpfExibicao = cli.cpf || "";
+  lista.sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
 
-  let html = `
-    <div class="card-new">
-      <h3 class="card-title">Contratos de ${nome}</h3>
-      <p style="font-size:.8rem; opacity:.75; margin-bottom:8px;">
-        CPF: ${cpfExibicao}
-      </p>
-  `;
+  lista.forEach((contrato, index) => {
+    const box = document.createElement("div");
+    box.className = "contract-box";
 
-  contratosCliente.forEach(contrato => {
-    // AJUSTE 4 — fallback seguro
-    const dataFormatada = formatarDataHora(contrato.criadoEm) || "Sem data";
+    box.innerHTML = `
+      <div class="contract-title">
+        Contrato ${index + 1} • ${new Date(contrato.criadoEm).toLocaleDateString('pt-BR')}
+      </div>
 
-    html += `
-      <div class="cliente-contrato-row">
-        <span>${dataFormatada}</span>
-        <button
-          class="btn-small btn-outline"
-          data-acao="abrir-contrato"
-          data-id="${contrato.id}">
-          Abrir contrato
-        </button>
-        <button
-          class="btn-small btn-primary-small"
-          data-acao="renovar-contrato"
-          data-id="${contrato.id}">
-          Renovação
-        </button>
+      <div class="contract-actions">
+        <button class="btn-view" onclick="abrirContratoPDF(${contrato.id})">Abrir</button>
+        <button class="btn-renew" onclick="renovarPorContrato(${contrato.id})">Renovar</button>
       </div>
     `;
-  });
 
-  html += `</div>`;
-  detalhes.innerHTML = html;
+    container.appendChild(box);
+  });
 }
 
-// -------------------------------------------------------
-// Renovar contrato → preencher o cliente no menu Contratos
-// -------------------------------------------------------
-function renovarContratoPorId(id) {
+
+// ======================================================
+// 5. Abrir contrato (usa função visualizarContrato do contratos.js)
+// ======================================================
+function abrirContratoPDF(id) {
   const contrato = cacheContratos.find(c => c.id === id);
-  if (!contrato || !contrato.cliente) return;
+  if (!contrato) return alert("Contrato não encontrado.");
 
-  const cliente = contrato.cliente;
-
-  // Ir para o menu Contratos
-  const btnContratos = document.querySelector('.menu-item[data-section="novo-contrato"]');
-  if (btnContratos) btnContratos.click();
-
-  // Preencher dados pessoais
-  const campos = {
-    clienteNome: cliente.nome || "",
-    clienteCpf: cliente.cpf || "",
-    clienteRg: cliente.rg || "",
-    clienteTelefone: cliente.telefone || "",
-    clienteEndereco: cliente.endereco || "",
-    clienteCidade: cliente.cidade || "",
-    clienteEstado: cliente.estado || ""
-  };
-  Object.keys(campos).forEach(idCampo => {
-    const el = document.getElementById(idCampo);
-    if (el) el.value = campos[idCampo];
-  });
-
-  // LIMPAR CAMPOS DE CONTRATO
-  const limpar = id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  };
-
-  limpar("valorEmprestimo");
-  limpar("percentual");
-  limpar("quantParcelas");
-  limpar("diasJuros");
-
-  const tipoJuros = document.getElementById("tipoJuros");
-  if (tipoJuros) tipoJuros.value = "total";
-
-  const parcelWrapper = document.getElementById("parcelListWrapper");
-  if (parcelWrapper) parcelWrapper.innerHTML = "";
-
-  const docsList = document.getElementById("docsList");
-  if (docsList) docsList.innerHTML = "";
-
-  const docsUpload = document.getElementById("docsUpload");
-  if (docsUpload) docsUpload.value = "";
-
-  // AJUSTE 8 — Zerar docsTemp para evitar contaminação
-  if (typeof docsTemp !== "undefined") docsTemp = [];
-
-  // AJUSTE 6 — Reativar comportamento do tipo de juros
-  if (typeof setupTipoJurosBehavior === "function") setupTipoJurosBehavior();
+  visualizarContrato(contrato);
 }
 
-// -------------------------------------------------------
-// Inicialização
-// -------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  cacheContratos = loadContratosClientes();
 
-  renderClientesLista("");
+// ======================================================
+// 6. Fluxo de RENOVAÇÃO — envia dados para ficha.html
+// ======================================================
+function renovarCliente(cpfLimpo) {
+  const contratos = cacheContratos.filter(c =>
+    c.cliente?.cpf?.replace(/[^0-9]/g, "") === cpfLimpo
+  );
 
-  const searchInput = document.getElementById("clienteSearchInput");
-  const clienteContratosDetalhes = document.getElementById("clienteContratosDetalhes");
+  if (!contratos.length) return alert("Cliente não encontrado.");
 
-  // AJUSTE 9 — Debounce
-  let clienteBuscaTimer = null;
+  const cliente = contratos[0].cliente;
 
-  if (searchInput) {
-    searchInput.addEventListener("input", () => {
-      // AJUSTE 5 — limpar detalhes ao digitar
-      if (clienteContratosDetalhes) clienteContratosDetalhes.innerHTML = "";
+  // salvar dados para ficha.html
+  localStorage.setItem("renovar_cliente", JSON.stringify(cliente));
 
-      clearTimeout(clienteBuscaTimer);
-      clienteBuscaTimer = setTimeout(() => {
-        renderClientesLista(searchInput.value);
-      }, 200);
-    });
-  }
+  // redirecionar
+  window.location.href = "ficha.html?renovar=1";
+}
 
-  // Clique em "Ver contratos (N)"
-  const lista = document.getElementById("clientesResultado");
-  if (lista) {
-    lista.addEventListener("click", ev => {
-      const btn = ev.target.closest("button[data-acao]");
-      if (!btn) return;
+function renovarPorContrato(id) {
+  const contrato = cacheContratos.find(c => c.id === id);
+  if (!contrato) return alert("Contrato não encontrado.");
 
-      const acao = btn.getAttribute("data-acao");
-      const cpf = btn.getAttribute("data-cpf");
+  localStorage.setItem("renovar_cliente", JSON.stringify(contrato.cliente));
 
-      if (acao === "ver-contratos" && cpf) {
-        mostrarContratosDoCliente(cpf);
-      }
-    });
-  }
+  window.location.href = "ficha.html?renovar=1";
+}
 
-  // Clique em Abrir contrato ou Renovação
-  const detalhes = document.getElementById("clienteContratosDetalhes");
-  if (detalhes) {
-    detalhes.addEventListener("click", ev => {
-      const btn = ev.target.closest("button[data-acao]");
-      if (!btn) return;
 
-      const acao = btn.getAttribute("data-acao");
-      const id = parseInt(btn.getAttribute("data-id") || "0", 10);
-      if (!id) return;
+// ======================================================
+// 7. BUSCA COM DEBOUNCE
+// ======================================================
+document.getElementById("clienteSearchInput").addEventListener("input", (e) => {
+  const termo = e.target.value;
 
-      const contrato = cacheContratos.find(c => c.id === id);
-      if (!contrato) return;
-
-      if (acao === "abrir-contrato") {
-        if (typeof visualizarContrato === "function") {
-          visualizarContrato(contrato);
-        }
-      } else if (acao === "renovar-contrato") {
-        renovarContratoPorId(id);
-      }
-    });
-  }
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    const grupos = agruparClientes(termo);
+    renderizarClientes(grupos);
+  }, 200);
 });
+
+
+// ======================================================
+// 8. INICIALIZAÇÃO DA PÁGINA
+// ======================================================
+function initClientes() {
+  carregarContratos();
+  const grupos = agruparClientes("");
+  renderizarClientes(grupos);
+}
+
+document.addEventListener("DOMContentLoaded", initClientes);
