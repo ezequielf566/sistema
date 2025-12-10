@@ -230,8 +230,7 @@
   <!-- JS PRINCIPAL -->
   <script src="../js/contratos.js"></script>
 
-
-  <!-- ⭐ SCRIPT RESPONSÁVEL POR RECEBER E PREENCHER A RENOVAÇÃO -->
+  <!-- ⭐ SCRIPT RESPONSÁVEL POR RENOVAÇÃO -->
   <script>
   document.addEventListener("DOMContentLoaded", () => {
 
@@ -240,7 +239,6 @@
     if (renovarData) {
       const cliente = JSON.parse(renovarData);
 
-      // Preenche automaticamente
       document.getElementById("clienteNome").value = cliente.nome || "";
       document.getElementById("clienteCpf").value = cliente.cpf || "";
       document.getElementById("clienteRg").value = cliente.rg || "";
@@ -258,7 +256,6 @@
 
   });
   </script>
-
 
   <!-- ⭐ SCRIPT DE TROCA DE ABAS -->
   <script>
@@ -290,6 +287,14 @@
 
     document.querySelectorAll(".panel-section").forEach(sec => sec.classList.remove("active"));
     document.getElementById("section-novo-contrato").classList.add("active");
+  </script>
+
+  <!-- ⭐ SCRIPT DO BOTÃO SAIR (CORRIGIDO E FUNCIONANDO) -->
+  <script>
+    document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+      localStorage.removeItem("financeApp_currentUser");
+      window.location.href = "../index.html";  // volta para a raiz
+    });
   </script>
 
 </body>
