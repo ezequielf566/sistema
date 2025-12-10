@@ -1,67 +1,144 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel do Motoboy</title>
+
   <link rel="stylesheet" href="../css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: #f5f7fb;
+      font-family: "Inter", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .topbar {
+      background: white;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    #btnLogoutHeader {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #btnLogoutHeader:hover {
+      background: #fecaca;
+    }
+
+    .entregas-wrapper {
+      padding: 18px;
+    }
+
+    .entrega-card {
+      background: white;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .entrega-info {
+      font-size: 0.95rem;
+      color: #374151;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .entrega-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-small {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-whatsapp {
+      background: #e0f7e9;
+      color: #047857;
+    }
+
+    .btn-mapa {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .btn-pdf {
+      background: #fef3c7;
+      color: #b45309;
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+    }
+
+    .btn-entregue {
+      background: #dcfce7;
+      color: #166534;
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+  </style>
 </head>
-<body class="panel-body">
 
-<header class="topbar">
-  <div class="topbar-left">
-    <img src="../icons/logo.png" class="topbar-logo" alt="Logo">
-    <div class="topbar-info">
-      <div class="topbar-title">Sistema Financeiro</div>
-      <div style="font-size:0.8rem;opacity:.85;">Painel do Motoboy</div>
+<body>
+
+  <!-- TOPO -->
+  <header class="topbar">
+    <div class="topbar-title">Painel do Motoboy</div>
+    <button id="btnLogoutHeader">Sair</button>
+  </header>
+
+  <main class="entregas-wrapper">
+    <div id="listaEntregas">
+      <!-- Conteúdo dinâmico -->
     </div>
-  </div>
-  <div class="topbar-user">
-    <span id="headerUserName">do Motoboy</span>
-    <img src="../icons/user-default.png" id="headerAvatar" class="topbar-avatar" alt="Avatar">
-  </div>
-</header>
-
-<div class="panel-layout">
-  <aside class="sidebar-new">
-    <div class="sidebar-user">
-      <img src="../icons/user-default.png" id="sidebarAvatar" class="sidebar-photo" alt="Avatar">
-      <h3 id="sidebarName">do Motoboy</h3>
-      <p class="sidebar-role">Usuário autenticado</p>
-    </div>
-
-    <nav class="sidebar-menu">
-      <h4 class="sidebar-section">Menu</h4>
-      <button class="menu-item active">
-        <span class="mi-icon">📊</span> Área principal
-      </button>
-    </nav>
-
-    <button id="btnLogout" class="logout-btn">Sair</button>
-  </aside>
-
-  <main class="panel-main">
-    <div class="panel-header">
-      <h2>Bem-vindo(a), do Motoboy</h2>
-      <p class="panel-desc">Esta área está em construção. Em breve, funções completas para este perfil.</p>
-    </div>
-
-    <section class="panel-section active">
-      <div class="card-new">
-        <p>Use este painel como base para implementar as funções específicas de <strong>do Motoboy</strong>.</p>
-      </div>
-    </section>
   </main>
-</div>
 
-<script>
-  document.getElementById('btnLogout').addEventListener('click', () => {
-    localStorage.removeItem('financeApp_currentUser');
-    window.location.href = '../index.html';
-  });
-</script>
+  <script src="../js/motoboy.js"></script>
+
+  <!-- LOGOUT -->
+  <script>
+    document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+      localStorage.removeItem("financeApp_currentUser");
+      window.location.href = "../index.html";
+    });
+  </script>
 
 </body>
 </html>
