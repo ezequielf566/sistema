@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagamentos</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: "Inter", sans-serif;
+    background: #f5f7fb;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .header-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .btn-back {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #e5e7eb;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border: none;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+
+  .btn-back:hover {
+    background: #d1d5db;
+  }
+
+  /* Search */
+  .search-area {
+    padding: 14px 16px 4px 16px;
+  }
+
+  #pagSearchInput {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  /* Filters */
+  .filters-wrapper {
+    padding: 6px 16px 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filters-group {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .filters-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  .filters-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    font-size: 0.85rem;
+    color: #4b5563;
+  }
+
+  .filters-options label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+
+  .filters-options input[type="checkbox"] {
+    transform: scale(0.9);
+  }
+
+  /* Resultado */
+  #pagamentosResultado {
+    padding: 10px 16px 24px 16px;
+  }
+
+  .city-block {
+    margin-bottom: 16px;
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .city-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 8px;
+  }
+
+  .cliente-bloco {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+  .cliente-nome {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .cliente-doc {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  /* Contratos */
+  .contrato-card {
+    margin-top: 8px;
+    padding: 10px 10px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+
+  .contrato-linha-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .contrato-id {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .status-andamento {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .status-proximo {
+    background: #fef9c3;
+    color: #854d0e;
+  }
+
+  .status-vencido {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  .status-concluido {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .contrato-info {
+    font-size: 0.8rem;
+    color: #4b5563;
+    margin-top: 4px;
+  }
+
+  .contrato-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .parcela-linha {
+    font-size: 0.8rem;
+    color: #4b5563;
+  }
+
+  .parcela-linha strong {
+    font-weight: 600;
+  }
+
+  .checkbox-pagar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #374151;
+    margin-top: 4px;
+  }
+
+  .checkbox-pagar input {
+    transform: scale(0.9);
+  }
+
+  .contrato-botoes {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .btn-mini {
+    flex: 1;
+    padding: 7px 8px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .btn-pdf {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+
+  .btn-pdf:hover {
+    background: #bae6fd;
+  }
+
+  .info-empty {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 20px;
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <button class="btn-back" onclick="window.location.href='ficha.html'">← Voltar</button>
+      <div class="header-title">Pagamentos</div>
+    </div>
+    <div class="header-subtitle">
+      Organize seus contratos por status de pagamento e acompanhe quem está em dia, próximo ou vencido.
+    </div>
+  </div>
+
+  <!-- Busca -->
+  <div class="search-area">
+    <input id="pagSearchInput"
+           type="text"
+           placeholder="Buscar por nome, CPF ou cidade...">
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-wrapper">
+
+    <!-- Filtros de status -->
+    <div class="filters-group">
+      <div class="filters-title">Status do contrato</div>
+      <div class="filters-options">
+        <label><input type="checkbox" id="filtroStatusAndamento" checked> Em andamento</label>
+        <label><input type="checkbox" id="filtroStatusProximo" checked> Próximo do vencimento</label>
+        <label><input type="checkbox" id="filtroStatusVencido" checked> Vencidos</label>
+        <label><input type="checkbox" id="filtroStatusConcluido"> Concluídos</label>
+      </div>
+    </div>
+
+    <!-- Filtros dinâmicos de cidade -->
+    <div class="filters-group">
+      <div class="filters-title">Cidades</div>
+      <div class="filters-options" id="filtrosCidades">
+        <!-- checkboxes de cidades serão preenchidos via JS -->
+      </div>
+    </div>
+
+    <!-- Filtros dinâmicos de estado -->
+    <div class="filters-group">
+      <div class="filters-title">Estados</div>
+      <div class="filters-options" id="filtrosEstados">
+        <!-- checkboxes de estados serão preenchidos via JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Resultado -->
+  <div id="pagamentosResultado"></div>
+
+  <!-- Scripts -->
+  <script src="../js/contratos.js"></script>
+  <script src="../js/pagamentos.js"></script>
+
+</body>
+</html>
