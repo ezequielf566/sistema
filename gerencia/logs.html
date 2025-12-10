@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logs do Sistema • Gerência</title>
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      font-family: "Inter", sans-serif;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: #ffffff;
+      border-right: 1px solid #e5e7eb;
+      padding: 20px 0;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+
+    .sidebar h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #111827;
+    }
+
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 14px;
+    }
+
+    .sidebar-item {
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #374151;
+      transition: 0.2s;
+      background: #f9fafb;
+    }
+
+    .sidebar-item:hover {
+      background: #e5e7eb;
+    }
+
+    .sidebar-item.active {
+      background: #3b82f6;
+      color: white;
+    }
+
+    /* Conteúdo */
+    .content {
+      margin-left: 240px;
+      padding: 30px;
+      width: calc(100% - 240px);
+    }
+
+    .content-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .content-subtitle {
+      font-size: 1rem;
+      color: #6b7280;
+      margin-top: 4px;
+      margin-bottom: 22px;
+    }
+
+    /* Filtros */
+    .filters-box {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-item {
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-item label {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .filter-item input, select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      font-size: 0.9rem;
+    }
+
+    /* Tabela */
+    .logs-table {
+      width: 100%;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-collapse: collapse;
+    }
+
+    .logs-table thead {
+      background: #f3f4f6;
+    }
+
+    .logs-table th, .logs-table td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.9rem;
+    }
+
+    .logs-table th {
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .logs-table tbody td {
+      color: #4b5563;
+    }
+
+    .log-empty {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+      font-size: 1rem;
+    }
+
+    /* Botão Sair */
+    #btnLogout {
+      margin-top: 30px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #fee2e2;
+      color: #b91c1c;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #btnLogout:hover {
+      background: #fecaca;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>Gerência</h2>
+
+    <div class="sidebar-menu">
+      <div class="sidebar-item" onclick="window.location.href='index.html'">📊 Dashboard</div>
+      <div class="sidebar-item" onclick="window.location.href='equipe.html'">👥 Equipe</div>
+      <div class="sidebar-item" onclick="window.location.href='financeiro.html'">💸 Financeiro</div>
+      <div class="sidebar-item" onclick="window.location.href='agenda.html'">📅 Agenda</div>
+      <div class="sidebar-item active">📝 Logs</div>
+      <div class="sidebar-item" onclick="window.location.href='relatorios.html'">📁 Relatórios</div>
+      <div class="sidebar-item" onclick="window.location.href='dados.html'">🔓 Dados</div>
+      <div class="sidebar-item" onclick="window.location.href='configuracoes.html'">⚙️ Configurações</div>
+    </div>
+
+    <button id="btnLogout">Sair</button>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="content">
+
+    <h1 class="content-title">Histórico de Atividades</h1>
+    <p class="content-subtitle">Monitoramento completo de ações registradas no sistema.</p>
+
+    <!-- FILTROS -->
+    <div class="filters-box">
+      <div class="filters-row">
+
+        <div class="filter-item">
+          <label>Data</label>
+          <input type="date" id="filtroData">
+        </div>
+
+        <div class="filter-item">
+          <label>Usuário</label>
+          <input type="text" id="filtroUsuario" placeholder="Nome do usuário">
+        </div>
+
+        <div class="filter-item">
+          <label>Categoria</label>
+          <select id="filtroCategoria">
+            <option value="">Todas</option>
+            <option value="caixa">Caixa</option>
+            <option value="motoboy">Motoboy</option>
+            <option value="gerencia">Gerência</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label>Ação</label>
+          <input type="text" id="filtroAcao" placeholder="Ex: contrato criado">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TABELA -->
+    <table class="logs-table">
+      <thead>
+        <tr>
+          <th>Data / Hora</th>
+          <th>Usuário</th>
+          <th>Categoria</th>
+          <th>Ação</th>
+          <th>Detalhes</th>
+        </tr>
+      </thead>
+
+      <tbody id="logsTabela">
+        <tr>
+          <td colspan="5" class="log-empty">Nenhum registro encontrado.</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </main>
+
+  <script>
+    document.getElementById("btnLogout").addEventListener("click", () => {
+      localStorage.removeItem("financeApp_currentUser");
+      window.location.href = "../index.html";
+    });
+  </script>
+
+</body>
+</html>
