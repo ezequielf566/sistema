@@ -176,5 +176,29 @@
   <!-- JS PRINCIPAL -->
   <script src="js/app.js"></script>
 
+  <!-- ⭐ AJUSTE — FECHAR MODAL AUTOMATICAMENTE APÓS CADASTRAR -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("createUserForm");
+
+      form.addEventListener("submit", () => {
+        setTimeout(() => {
+          // Fecha o modal
+          document.getElementById("modalCreateUser").style.display = "none";
+
+          // Limpa os campos do formulário
+          form.reset();
+
+          // Exibe o toast
+          const toast = document.getElementById("toast");
+          const msg = document.getElementById("toastMessage");
+          msg.textContent = "Usuário criado com sucesso!";
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2600);
+        }, 200); // tempo para deixar o app.js salvar antes de fechar
+      });
+    });
+  </script>
+
 </body>
 </html>
