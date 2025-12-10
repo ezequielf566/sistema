@@ -230,7 +230,7 @@
   <!-- JS PRINCIPAL -->
   <script src="../js/contratos.js"></script>
 
-  <!-- ⭐ SCRIPT RESPONSÁVEL POR RENOVAÇÃO -->
+  <!-- ⭐ SCRIPT DE RENOVAÇÃO -->
   <script>
   document.addEventListener("DOMContentLoaded", () => {
 
@@ -289,11 +289,15 @@
     document.getElementById("section-novo-contrato").classList.add("active");
   </script>
 
-  <!-- ⭐ SCRIPT DO BOTÃO SAIR (CORRIGIDO E FUNCIONANDO) -->
+  <!-- ⭐ SCRIPT DO BOTÃO SAIR (FINAL E CORRETO) -->
   <script>
     document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+
+      // Desloga o usuário SEM apagar o cadastro
       localStorage.removeItem("financeApp_currentUser");
-      window.location.href = "../index.html";  // volta para a raiz
+
+      // Redireciona para o index na raiz do projeto
+      window.location.href = "../index.html";
     });
   </script>
 
