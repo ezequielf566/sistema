@@ -230,26 +230,46 @@
   <!-- JS PRINCIPAL -->
   <script src="../js/contratos.js"></script>
 
-  <!-- LOGOUT -->
+
+  <!-- ⭐ SCRIPT RESPONSÁVEL POR RECEBER E PREENCHER A RENOVAÇÃO -->
   <script>
-    document.getElementById("btnLogoutHeader").addEventListener("click", () => {
-      localStorage.removeItem("financeApp_currentUser");
-      window.location.href = "/index.html";
-    });
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const renovarData = localStorage.getItem("renovar_cliente");
+
+    if (renovarData) {
+      const cliente = JSON.parse(renovarData);
+
+      // Preenche automaticamente
+      document.getElementById("clienteNome").value = cliente.nome || "";
+      document.getElementById("clienteCpf").value = cliente.cpf || "";
+      document.getElementById("clienteRg").value = cliente.rg || "";
+      document.getElementById("clienteTelefone").value = cliente.telefone || "";
+      document.getElementById("clienteEndereco").value = cliente.endereco || "";
+      document.getElementById("clienteCidade").value = cliente.cidade || "";
+      document.getElementById("clienteEstado").value = cliente.estado || "";
+
+      localStorage.removeItem("renovar_cliente");
+
+      if (typeof showToast === "function") {
+        showToast("Renovação iniciada. Dados carregados.");
+      }
+    }
+
+  });
   </script>
 
-  <!-- ⭐ SCRIPT DE TROCA DE ABAS (VERSÃO 100% FUNCIONAL) -->
+
+  <!-- ⭐ SCRIPT DE TROCA DE ABAS -->
   <script>
     document.querySelectorAll(".menu-item").forEach(btn => {
       btn.addEventListener("click", () => {
 
-        // Troca visual
         document.querySelectorAll(".menu-item").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
 
         const section = btn.getAttribute("data-section");
 
-        // Trocar sections via ACTIVE
         document.querySelectorAll(".panel-section").forEach(sec => {
           sec.classList.remove("active");
         });
@@ -259,7 +279,6 @@
           target.classList.add("active");
         }
 
-        // Atualizar título
         const titles = {
           "novo-contrato": "Novo Contrato",
           "clientes": "Clientes",
@@ -269,7 +288,6 @@
       });
     });
 
-    // Inicialização da página
     document.querySelectorAll(".panel-section").forEach(sec => sec.classList.remove("active"));
     document.getElementById("section-novo-contrato").classList.add("active");
   </script>
