@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel do Caixa</title>
 
   <link rel="stylesheet" href="../css/style.css">
@@ -16,78 +16,35 @@
       background: #f5f7fb;
     }
 
-    #btnLogoutHeader {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #b91c1c;
-      font-size: 0.85rem;
+    /* Submenu Clientes */
+    .submenu-clientes {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .submenu-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
-      padding: 6px 14px;
-      border-radius: 10px;
       transition: 0.2s ease;
     }
 
-    #btnLogoutHeader:hover {
-      background: #ffe1e1;
+    .submenu-btn:hover {
+      background: #f3f4f6;
     }
 
-    .menu-filler {
-      width: 100%;
-      height: 26px;
-      background: #f5f7fb;
-      position: sticky;
-      top: 56px;
-      z-index: 998;
-    }
-
-    .sidebar-new {
-      position: sticky;
-      top: 82px !important;
-      z-index: 999 !important;
-      width: 100%;
-      padding: 8px 8px;
-      background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      display: flex;
-      justify-content: center;
-    }
-
-    .sidebar-menu {
-      width: 100%;
-      max-width: 620px;
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .sidebar-menu .menu-item {
-      flex: 1;
-      height: 36px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 0.75rem;
-      border-radius: 10px;
-      white-space: nowrap;
-    }
-
-    .panel-main {
-      padding: 14px;
-      margin-top: 36px !important;
-      position: relative;
-      z-index: 1;
-    }
-
-    .panel-header {
-      margin-bottom: 22px !important;
-    }
-
-    .panel-header p {
-      margin-top: 4px !important;
-      margin-bottom: 16px !important;
+    .submenu-btn:active {
+      background: #e5e7eb;
     }
   </style>
+
 </head>
 
 <body class="panel-body">
@@ -107,7 +64,7 @@
     </div>
   </header>
 
-  <!-- FILLER DO MENU -->
+  <!-- FILLER -->
   <div class="menu-filler"></div>
 
   <!-- MENU SUPERIOR -->
@@ -209,7 +166,7 @@
 
         <div class="form-item full" id="diasJurosGroup">
           <label>Dias do contrato (uma parcela por dia)</label>
-          <input type="number" id="diasJuros" placeholder="Ex: 3, 10, 20...">
+          <input type="number" id="diasJuros">
         </div>
 
         <div class="action-row">
@@ -244,11 +201,17 @@
       </div>
     </section>
 
-    <!-- ====================== CLIENTES ====================== -->
+    <!-- ====================== CLIENTES (SUBMENU) ====================== -->
     <section class="panel-section" id="section-clientes">
       <div class="card-new">
-        <h3 class="card-title">Clientes cadastrados</h3>
-        <div id="clientesList"></div>
+        <h3 class="card-title">Clientes</h3>
+
+        <p style="opacity:0.8; margin-bottom:10px;">Escolha o módulo desejado:</p>
+
+        <div class="submenu-clientes">
+          <div class="submenu-btn" onclick="window.location.href='clientes.html'">🔍 Buscar Clientes</div>
+          <div class="submenu-btn" onclick="window.location.href='pagamentos.html'">💰 Pagamentos</div>
+        </div>
       </div>
     </section>
 
@@ -264,7 +227,7 @@
 
   <div class="toast" id="toast"><span id="toastMessage">Ação realizada.</span></div>
 
-  <!-- JS ORIGINAL -->
+  <!-- JS PRINCIPAL -->
   <script src="../js/contratos.js"></script>
 
   <!-- LOGOUT -->
@@ -275,95 +238,40 @@
     });
   </script>
 
-  <!-- 🔥 SCRIPT NOVO: REAPROVEITAR CONTRATO + TABELA SIMPLIFICADA -->
+  <!-- ⭐ SCRIPT DE TROCA DE ABAS (VERSÃO 100% FUNCIONAL) -->
   <script>
-    function renderClientesTable() {
-      const div = document.getElementById("clientesList");
-      const clientes = JSON.parse(localStorage.getItem("financeApp_clientes") || "[]");
+    document.querySelectorAll(".menu-item").forEach(btn => {
+      btn.addEventListener("click", () => {
 
-      if (!clientes.length) {
-        div.innerHTML = "<p>Nenhum cliente cadastrado ainda.</p>";
-        return;
-      }
+        // Troca visual
+        document.querySelectorAll(".menu-item").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
 
-      let html = `
-        <table class="table-list">
-          <thead>
-            <tr><th>Nome</th><th>Cidade</th><th>Ações</th></tr>
-          </thead>
-          <tbody>
-      `;
+        const section = btn.getAttribute("data-section");
 
-      clientes.forEach((c, index) => {
-        html += `
-          <tr>
-            <td>${c.nome}</td>
-            <td>${c.cidade}</td>
-            <td>
-              <button class="btn-small" onclick="reaproveitarContrato(${index})">Reaproveitar</button>
-            </td>
-          </tr>
-        `;
+        // Trocar sections via ACTIVE
+        document.querySelectorAll(".panel-section").forEach(sec => {
+          sec.classList.remove("active");
+        });
+
+        const target = document.getElementById(`section-${section}`);
+        if (target) {
+          target.classList.add("active");
+        }
+
+        // Atualizar título
+        const titles = {
+          "novo-contrato": "Novo Contrato",
+          "clientes": "Clientes",
+          "envios": "Envios ao Motoboy"
+        };
+        document.getElementById("mainTitle").textContent = titles[section];
       });
-
-      html += "</tbody></table>";
-      div.innerHTML = html;
-    }
-
-    function reaproveitarContrato(clienteIndex) {
-      const clientes = JSON.parse(localStorage.getItem("financeApp_clientes") || "[]");
-      const contratos = JSON.parse(localStorage.getItem("financeApp_contracts") || "[]" );
-
-      const cliente = clientes[clienteIndex];
-
-      const contratosCliente = contratos
-        .filter(c => c.clienteIndex === clienteIndex)
-        .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
-
-      const ultimo = contratosCliente[0];
-
-      if (!ultimo) {
-        alert("Nenhum contrato anterior encontrado.");
-        return;
-      }
-
-      document.getElementById("clienteNome").value = cliente.nome;
-      document.getElementById("clienteCpf").value = cliente.cpf;
-      document.getElementById("clienteRg").value = cliente.rg;
-      document.getElementById("clienteTelefone").value = cliente.telefone;
-      document.getElementById("clienteEndereco").value = cliente.endereco;
-      document.getElementById("clienteCidade").value = cliente.cidade;
-      document.getElementById("clienteEstado").value = cliente.estado;
-
-      document.getElementById("valorEmprestimo").value = ultimo.valorEmprestimo;
-      document.getElementById("percentual").value = ultimo.percentual;
-      document.getElementById("quantParcelas").value = ultimo.quantParcelas;
-      document.getElementById("tipoJuros").value = ultimo.tipoJuros;
-
-      if (ultimo.tipoJuros === "diario_total") {
-        document.getElementById("diasJuros").value = ultimo.diasJuros;
-      }
-
-      const wrapper = document.getElementById("parcelListWrapper");
-      wrapper.innerHTML = "";
-
-      ultimo.parcelas.forEach(p => {
-        const div = document.createElement("div");
-        div.className = "parcel-row";
-        div.innerHTML = `
-          <input type="date" class="parcela-data" value="${p.data}">
-          <input type="number" class="parcela-valor" step="0.01" value="${p.valor}">
-          <button type="button" class="btn-small-danger" onclick="this.parentElement.remove()">X</button>
-        `;
-        wrapper.appendChild(div);
-      });
-
-      alert("Contrato reaproveitado com sucesso!");
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      renderClientesTable();
     });
+
+    // Inicialização da página
+    document.querySelectorAll(".panel-section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById("section-novo-contrato").classList.add("active");
   </script>
 
 </body>
