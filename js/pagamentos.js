@@ -75,7 +75,6 @@ function calcularStatusContrato(contrato) {
   }
 
   if (indiceProxima === -1) {
-    // sem parcela registrada, mas não concluído => trata como concluído
     rec.concluido = true;
     return {
       status: "concluido",
@@ -89,18 +88,15 @@ function calcularStatusContrato(contrato) {
   const proximaParcela = parcelas[indiceProxima];
   let status = "andamento";
 
-  // Cálculo de datas
   try {
     const hoje = new Date();
     const dataStr = proximaParcela.data; // "YYYY-MM-DD"
-    // Vence às 18h do dia da parcela
     const vencimento = new Date(`${dataStr}T18:00:00`);
 
     const diffMs = vencimento.getTime() - hoje.getTime();
     const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffMs < 0) {
-      // Já passou do horário de vencimento => vencido
       status = "vencido";
     } else {
       if (diffDias >= 5) {
@@ -108,7 +104,6 @@ function calcularStatusContrato(contrato) {
       } else if (diffDias >= 1 && diffDias <= 4) {
         status = "proximo";
       } else {
-        // diffDias === 0 => dia do vencimento
         const horaAtual = hoje.getHours();
         if (horaAtual >= 18) {
           status = "vencido";
@@ -211,31 +206,25 @@ function renderizarPagamentos() {
     const nome = cli.nome || "";
     const cpf = cli.cpf || "";
 
-    // Filtro texto
     const texto = `${nome} ${cpf} ${cidade}`.toLowerCase();
     if (filtros.termo && !texto.includes(filtros.termo)) return;
 
-    // Filtro cidade
     if (filtros.selectedCidades.length > 0 && !filtros.selectedCidades.includes(cidade)) {
       return;
     }
 
-    // Filtro estado
     if (filtros.selectedEstados.length > 0 && (!estado || !filtros.selectedEstados.includes(estado))) {
       return;
     }
 
-    // Status
     const infoStatus = calcularStatusContrato(contrato);
     const st = infoStatus.status;
 
-    // Filtro status
     if (st === "andamento" && !filtros.statusAnd) return;
     if (st === "proximo" && !filtros.statusProx) return;
     if (st === "vencido" && !filtros.statusVenc) return;
     if (st === "concluido" && !filtros.statusConc) return;
 
-    // Agrupar por cidade -> cliente
     if (!resultadoPorCidade[cidade]) resultadoPorCidade[cidade] = {};
     if (!resultadoPorCidade[cidade][cpf]) {
       resultadoPorCidade[cidade][cpf] = {
@@ -388,7 +377,6 @@ function marcarParcelaPaga(contratoId, indiceParcela) {
     rec.parcelasPagas.sort((a, b) => a - b);
   }
 
-  // Atualiza concluído se necessário
   const totalParcelas = (contrato.parcelas || []).length;
   if (rec.parcelasPagas.length >= totalParcelas) {
     rec.concluido = true;
@@ -403,36 +391,179 @@ function marcarParcelaPaga(contratoId, indiceParcela) {
   renderizarPagamentos();
 }
 
-// =================== Relatório PDF de pagamentos ===================
-// Usa o MESMO visualizarContrato do contratos.js
-// Mas marca as parcelas pagas em VERDE via HTML no campo data
+// =================== Relatório PDF de pagamentos (independente) ===================
 function gerarRelatorioPagamento(contratoId) {
-  const contratoOriginal = cacheContratos.find(c => c.id === contratoId);
-  if (!contratoOriginal) {
+  const contrato = cacheContratos.find(c => c.id === contratoId);
+  if (!contrato) {
     alert("Contrato não encontrado.");
     return;
   }
 
-  const rec = getPagRecord(contratoOriginal);
+  const rec = getPagRecord(contrato);
   const pagas = new Set(rec.parcelasPagas || []);
+  const cliente = contrato.cliente || {};
+  const parcelas = contrato.parcelas || [];
 
-  // Clone profundo para não alterar o original
-  const clone = JSON.parse(JSON.stringify(contratoOriginal));
-  const parcelas = clone.parcelas || [];
+  const totalLinhas = Math.max(10, parcelas.length);
 
-  parcelas.forEach((p, idx) => {
-    if (pagas.has(idx) && p.data) {
-      const dataTexto = p.data;
-      p.data = `<span style="color:#0f5132;font-weight:600;">${dataTexto} (PAGA)</span>`;
+  let linhas = "";
+  for (let i = 0; i < totalLinhas; i++) {
+    const p = parcelas[i];
+    if (!p) {
+      linhas += `
+        <tr>
+          <td>${i + 1}</td>
+          <td></td>
+          <td></td>
+        </tr>
+      `;
+      continue;
     }
-  });
 
-  // Usa a mesma função já existente para gerar o PDF
-  if (typeof visualizarContrato === "function") {
-    visualizarContrato(clone);
-  } else {
-    alert("Função visualizarContrato não encontrada.");
+    const valorTxt = p.valor ? "R$ " + Number(p.valor).toFixed(2) : "";
+    const paga = pagas.has(i);
+
+    if (paga) {
+      linhas += `
+        <tr>
+          <td>${i + 1}</td>
+          <td style="color:#0f5132;font-weight:600;">${p.data} (PAGA)</td>
+          <td style="color:#0f5132;font-weight:600;">${valorTxt}</td>
+        </tr>
+      `;
+    } else {
+      linhas += `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${p.data || ""}</td>
+          <td>${valorTxt}</td>
+        </tr>
+      `;
+    }
   }
+
+  let tipoLabel = "Percentual sobre o valor total";
+  if (contrato.tipoJuros === "diario_total") {
+    tipoLabel = "Percentual por dias (fixo sobre o total)";
+  } else if (contrato.tipoJuros === "mensal") {
+    tipoLabel = "Percentual mensal";
+  }
+
+  const dataHoje = new Date();
+  const dataFormatada = dataHoje.toLocaleDateString("pt-BR");
+
+  const win = window.open("", "_blank", "width=900,height=1200");
+  if (!win) {
+    alert("Não foi possível abrir a janela do relatório. Verifique o bloqueador de pop-ups.");
+    return;
+  }
+
+  win.document.write(`
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <title>Relatório de Pagamentos</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 24px;
+          color: #111827;
+        }
+        .header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        }
+        .header-logo {
+          height: 40px;
+        }
+        h2 {
+          margin: 0;
+          font-size: 1.4rem;
+        }
+        h3 {
+          margin-top: 20px;
+          margin-bottom: 8px;
+        }
+        p {
+          margin: 2px 0;
+          font-size: 0.9rem;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 8px;
+          font-size: 0.85rem;
+        }
+        th, td {
+          border: 1px solid #e5e7eb;
+          padding: 6px 8px;
+          text-align: left;
+        }
+        th {
+          background: #f3f4f6;
+        }
+        .multa {
+          margin-top: 10px;
+          font-size: 0.8rem;
+          color: #4b5563;
+        }
+        .assinatura-area {
+          margin-top: 40px;
+          text-align: center;
+        }
+        .linha-assinatura {
+          border-top: 1px solid #000;
+          margin: 0 auto 4px auto;
+          width: 60%;
+        }
+      </style>
+    </head>
+    <body>
+
+      <div class="header">
+        <img src="../icons/logo.png" class="header-logo">
+        <div>
+          <h2>Relatório de Pagamentos</h2>
+          <p>${dataFormatada}</p>
+        </div>
+      </div>
+
+      <h3>Dados do Cliente</h3>
+      <p><strong>Nome:</strong> ${cliente.nome || ""}</p>
+      <p><strong>CPF:</strong> ${cliente.cpf || ""} — <strong>RG:</strong> ${cliente.rg || ""}</p>
+      <p><strong>Endereço:</strong> ${cliente.endereco || ""} — ${(cliente.cidade || "")}/${(cliente.estado || "")}</p>
+
+      <h3>Dados do Contrato</h3>
+      <p><strong>ID do contrato:</strong> ${contrato.id || ""}</p>
+      <p><strong>Valor emprestado:</strong> R$ ${Number(contrato.valorEmprestimo || 0).toFixed(2)}</p>
+      <p><strong>Percentual:</strong> ${contrato.percentual || 0}% — <strong>Tipo:</strong> ${tipoLabel}</p>
+
+      <h3>Parcelas</h3>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Data</th><th>Valor</th></tr>
+        </thead>
+        <tbody>${linhas}</tbody>
+      </table>
+
+      <p class="multa">
+        Parcelas pagas em destaque verde com a indicação "(PAGA)".
+      </p>
+
+      <div class="assinatura-area">
+        <div class="linha-assinatura"></div>
+        <div>${cliente.nome || ""}</div>
+      </div>
+
+      <script>window.print()</script>
+    </body>
+    </html>
+  `);
+
+  win.document.close();
 }
 
 // =================== Eventos de filtro/busca ===================
@@ -451,7 +582,6 @@ function setupEventosPagamentos() {
     el.addEventListener("change", renderizarPagamentos);
   });
 
-  // Filtros de cidades/estados (delegados após montagem)
   document.addEventListener("change", (e) => {
     if (e.target.classList.contains("filtro-cidade") ||
         e.target.classList.contains("filtro-estado")) {
