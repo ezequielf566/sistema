@@ -9,87 +9,124 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --sidebar-width: 230px;
+    }
+
     body {
-      background: #f5f7fb;
       margin: 0;
+      background: #f5f7fb;
       font-family: "Inter", sans-serif;
     }
 
-    /* TOPO */
-    .topbar {
+    /* ================= TOPBAR ================= */
+
+    .topbar-gerencia {
+      position: sticky;
+      top: 0;
+      z-index: 40;
       background: white;
-      padding: 16px 22px;
       border-bottom: 1px solid #e5e7eb;
+      padding: 10px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .topbar-title {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: #111827;
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-menu-toggle {
+      display: none;
+      border: none;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
     }
 
     #btnLogoutHeader {
       background: #fee2e2;
       border: 1px solid #fecaca;
       color: #b91c1c;
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 6px 12px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
       transition: .2s;
     }
 
-    #btnLogoutHeader:hover { background: #fecaca; }
+    /* ================= SIDEBAR ================= */
 
-    /* MENU LATERAL */
-    .sidebar {
-      width: 240px;
-      background: white;
-      border-right: 1px solid #e5e7eb;
-      height: 100vh;
+    .sidebar-overlay {
+      display: none;
       position: fixed;
-      top: 64px;
-      left: 0;
-      padding-top: 20px;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      z-index: 30;
     }
 
-    .menu-btn {
-      width: 100%;
-      padding: 14px 22px;
-      font-size: 0.95rem;
+    .sidebar-gerencia {
+      width: var(--sidebar-width);
+      background: white;
+      border-right: 1px solid #e5e7eb;
+      padding: 16px 10px;
+      height: calc(100vh - 54px);
+      box-sizing: border-box;
+    }
+
+    .sidebar-close {
+      display: none;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
       border: none;
-      background: none;
-      text-align: left;
+      background: #f3f4f6;
       cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      text-decoration: none;
       color: #374151;
-      font-weight: 600;
+      font-size: 0.9rem;
       transition: 0.2s;
     }
 
-    .menu-btn:hover { background: #f3f4f6; }
-    .menu-btn.active { background: #e0e7ff; color: #4338ca; }
+    .sidebar-link.active {
+      background: #eef2ff;
+      color: #4f46e5;
+      font-weight: 600;
+    }
 
-    /* CONTEÚDO */
+    /* ================= CONTEÚDO ================= */
+
     .content {
-      margin-left: 260px;
-      padding: 22px;
+      padding: 18px;
+      margin-left: var(--sidebar-width);
     }
 
     .section-title {
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       font-weight: 700;
-      color: #111827;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
     /* CARDS */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
       margin-bottom: 30px;
     }
 
@@ -98,7 +135,7 @@
       padding: 18px;
       border-radius: 14px;
       border: 1px solid #e5e7eb;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     }
 
     .card-label {
@@ -107,10 +144,9 @@
     }
 
     .card-value {
-      font-size: 1.6rem;
+      margin-top: 6px;
+      font-size: 1.5rem;
       font-weight: 700;
-      color: #111827;
-      margin-top: 4px;
     }
 
     /* GRÁFICOS */
@@ -119,31 +155,35 @@
       border-radius: 14px;
       height: 220px;
       margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
     }
 
     /* FILTROS */
     .filter-box {
       background: white;
-      border-radius: 12px;
-      padding: 16px;
       border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 18px;
       margin-bottom: 26px;
     }
 
     .filter-title {
       font-size: 1rem;
-      margin-bottom: 12px;
       font-weight: 600;
+      margin-bottom: 12px;
     }
 
     .filter-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 12px;
     }
 
-    .filter-grid input, .filter-grid select {
-      width: 100%;
+    .filter-grid input, 
+    .filter-grid select {
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #d1d5db;
@@ -151,24 +191,20 @@
     }
 
     /* TABELAS */
-    .table-box {
-      margin-top: 30px;
-    }
-
     table {
       width: 100%;
       border-collapse: collapse;
       background: white;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      margin-bottom: 40px;
+      margin-bottom: 36px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     }
 
     th, td {
       padding: 12px 16px;
-      font-size: 0.9rem;
       border-bottom: 1px solid #e5e7eb;
+      font-size: 0.9rem;
       color: #374151;
     }
 
@@ -178,60 +214,73 @@
     }
 
     tr:last-child td { border-bottom: none; }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .btn-menu-toggle { display: inline-flex; }
+
+      .sidebar-gerencia {
+        position: fixed;
+        top: 54px;
+        left: -260px;
+        height: calc(100vh - 54px);
+        z-index: 40;
+        transition: left .22s;
+      }
+
+      .sidebar-gerencia.open { left: 0; }
+      .sidebar-overlay.show { display: block; }
+
+      .sidebar-close { display: inline-block; }
+
+      .content { margin-left: 0; }
+    }
   </style>
 </head>
+
 <body>
 
-  <!-- TOPO -->
-  <header class="topbar">
-    <div class="topbar-title">Gerência — Financeiro</div>
+  <!-- TOPBAR -->
+  <header class="topbar-gerencia">
+    <div class="topbar-left">
+      <button class="btn-menu-toggle" id="btnMenuToggle">☰ Menu</button>
+      <div class="topbar-title">Gerência — Financeiro</div>
+    </div>
     <button id="btnLogoutHeader">Sair</button>
   </header>
 
-  <!-- MENU LATERAL -->
-  <aside class="sidebar">
-    <button class="menu-btn" onclick="location.href='index.html'">📊 Dashboard</button>
-    <button class="menu-btn" onclick="location.href='equipe.html'">👥 Equipe</button>
-    <button class="menu-btn active">💸 Financeiro</button>
-    <button class="menu-btn" onclick="location.href='agenda.html'">📅 Agenda</button>
-    <button class="menu-btn" onclick="location.href='logs.html'">📝 Logs</button>
-    <button class="menu-btn" onclick="location.href='relatorios.html'">📁 Relatórios</button>
-    <button class="menu-btn" onclick="location.href='dados.html'">🔓 Dados</button>
-    <button class="menu-btn" onclick="location.href='configuracoes.html'">⚙️ Configurações</button>
+  <!-- OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar-gerencia" id="sidebarGerencia">
+    <button class="sidebar-close" id="btnSidebarClose">✕ Fechar</button>
+
+    <a href="gerencia.html" class="sidebar-link">📊 Dashboard</a>
+    <a href="equipe.html" class="sidebar-link">👥 Equipe</a>
+    <a href="financeiro.html" class="sidebar-link active">💸 Financeiro</a>
+    <a href="agenda.html" class="sidebar-link">📅 Agenda</a>
+    <a href="logs.html" class="sidebar-link">📝 Logs</a>
+    <a href="relatorios.html" class="sidebar-link">📁 Relatórios</a>
+    <a href="dados.html" class="sidebar-link">🔓 Dados</a>
+    <a href="configuracoes.html" class="sidebar-link">⚙️ Configurações</a>
   </aside>
 
   <!-- CONTEÚDO -->
   <main class="content">
 
-    <!-- TÍTULO -->
     <h2 class="section-title">Visão Financeira</h2>
 
     <!-- CARDS -->
     <div class="cards-grid">
-      <div class="card">
-        <div class="card-label">Entradas Hoje</div>
-        <div class="card-value" id="entradasHoje">R$ 0,00</div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">Saídas Hoje</div>
-        <div class="card-value" id="saidasHoje">R$ 0,00</div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">Saldo Virtual</div>
-        <div class="card-value" id="saldoGeral">R$ 0,00</div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">Ticket Médio</div>
-        <div class="card-value" id="ticketMedio">R$ 0,00</div>
-      </div>
+      <div class="card"><div class="card-label">Entradas Hoje</div><div class="card-value" id="entradasHoje">R$ 0,00</div></div>
+      <div class="card"><div class="card-label">Saídas Hoje</div><div class="card-value" id="saidasHoje">R$ 0,00</div></div>
+      <div class="card"><div class="card-label">Saldo Virtual</div><div class="card-value" id="saldoGeral">R$ 0,00</div></div>
+      <div class="card"><div class="card-label">Ticket Médio</div><div class="card-value" id="ticketMedio">R$ 0,00</div></div>
     </div>
 
-    <!-- GRÁFICOS -->
-    <div class="chart-placeholder" id="graficoEntradas">Gráfico de Entradas</div>
-    <div class="chart-placeholder" id="graficoSaidas">Gráfico de Saídas</div>
+    <div class="chart-placeholder">Gráfico de Entradas</div>
+    <div class="chart-placeholder">Gráfico de Saídas</div>
 
     <!-- FILTROS -->
     <div class="filter-box">
@@ -241,59 +290,42 @@
         <input type="date" id="filtroDataInicio">
         <input type="date" id="filtroDataFim">
         <input type="text" id="filtroCliente" placeholder="Cliente">
-        <select id="filtroOperador">
-          <option value="">Operador</option>
-        </select>
+        <select id="filtroOperador"><option value="">Operador</option></select>
       </div>
     </div>
 
-    <!-- TABELA DE ENTRADAS -->
-    <div class="table-box">
-      <h3>Entradas (Parcelas Recebidas)</h3>
-      <table id="tabelaEntradas">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Cliente</th>
-            <th>Contrato</th>
-            <th>Valor</th>
-            <th>Operador</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Preenchido via financeiro.js -->
-        </tbody>
-      </table>
-    </div>
+    <!-- TABELAS -->
+    <h3>Entradas (Parcelas Recebidas)</h3>
+    <table id="tabelaEntradas">
+      <thead><tr><th>Data</th><th>Cliente</th><th>Contrato</th><th>Valor</th><th>Operador</th></tr></thead>
+      <tbody></tbody>
+    </table>
 
-    <!-- TABELA DE SAÍDAS -->
-    <div class="table-box">
-      <h3>Saídas (Empréstimos Liberados)</h3>
-      <table id="tabelaSaidas">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Cliente</th>
-            <th>Valor</th>
-            <th>Responsável</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Preenchido via financeiro.js -->
-        </tbody>
-      </table>
-    </div>
+    <h3>Saídas (Empréstimos Liberados)</h3>
+    <table id="tabelaSaidas">
+      <thead><tr><th>Data</th><th>Cliente</th><th>Valor</th><th>Responsável</th></tr></thead>
+      <tbody></tbody>
+    </table>
 
   </main>
 
   <script src="../js/financeiro.js"></script>
 
-  <!-- LOGOUT -->
+  <!-- MENU SCRIPT -->
   <script>
-    document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+    const sidebar = document.getElementById("sidebarGerencia");
+    const overlay = document.getElementById("sidebarOverlay");
+    const btnMenu = document.getElementById("btnMenuToggle");
+    const btnClose = document.getElementById("btnSidebarClose");
+
+    btnMenu.onclick = () => { sidebar.classList.add("open"); overlay.classList.add("show"); };
+    btnClose.onclick = () => { sidebar.classList.remove("open"); overlay.classList.remove("show"); };
+    overlay.onclick = () => { sidebar.classList.remove("open"); overlay.classList.remove("show"); };
+
+    document.getElementById("btnLogoutHeader").onclick = () => {
       localStorage.removeItem("financeApp_currentUser");
       window.location.href = "../index.html";
-    });
+    };
   </script>
 
 </body>
