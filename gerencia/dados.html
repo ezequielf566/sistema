@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dados da Operação — Painel da Gerência</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background: #f5f7fb;
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .topbar {
+    background: white;
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .topbar-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  #btnLogoutHeader {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  #btnLogoutHeader:hover {
+    background: #fecaca;
+  }
+
+  .wrapper {
+    padding: 20px;
+  }
+
+  .section-block {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 7px rgba(0,0,0,0.05);
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 6px;
+  }
+
+  .section-desc {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .info-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 14px;
+  }
+
+  .info-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #111827;
+  }
+
+  .info-value {
+    font-size: 0.85rem;
+    color: #4b5563;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-title">Dados da Operação</div>
+  <button id="btnLogoutHeader">Sair</button>
+</header>
+
+<main class="wrapper">
+
+  <!-- 📌 DADOS DA EMPRESA -->
+  <div class="section-block">
+    <div class="section-title">📌 Dados da Empresa</div>
+    <div class="section-desc">Informações cadastradas da organização.</div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-title">Nome da Empresa</div>
+        <div class="info-value">Exemplo Ltda</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">CNPJ</div>
+        <div class="info-value">00.000.000/0001-00</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Telefone</div>
+        <div class="info-value">(92) 00000-0000</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Endereço</div>
+        <div class="info-value">Rua Exemplo, 123 — Manaus-AM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⚙️ CONFIGURAÇÕES DO SISTEMA -->
+  <div class="section-block">
+    <div class="section-title">⚙️ Configurações do Sistema</div>
+    <div class="section-desc">Informações técnicas e parâmetros de operação.</div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-title">Versão do Sistema</div>
+        <div class="info-value">1.0.0</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Última Atualização</div>
+        <div class="info-value">12/03/2025</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Ambiente</div>
+        <div class="info-value">Produção</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Método de Sincronização</div>
+        <div class="info-value">LocalStorage / API futura</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🧾 INFORMAÇÕES FISCAIS -->
+  <div class="section-block">
+    <div class="section-title">🧾 Informações Fiscais</div>
+    <div class="section-desc">Área para registrar ou consultar dados fiscais importantes.</div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-title">Regime Tributário</div>
+        <div class="info-value">MEI / Simples / Normal</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Responsável Fiscal</div>
+        <div class="info-value">Fulano de Tal</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Vencimento Mensal</div>
+        <div class="info-value">Todo dia 12</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🎯 METAS DA OPERAÇÃO -->
+  <div class="section-block">
+    <div class="section-title">🎯 Metas Mensais</div>
+    <div class="section-desc">Metas de produtividade e financeiros definidos pela gerência.</div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-title">Meta de Empréstimos</div>
+        <div class="info-value">R$ 80.000 / mês</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Meta de Pagamentos</div>
+        <div class="info-value">R$ 120.000 / mês</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Meta de Novos Clientes</div>
+        <div class="info-value">150 / mês</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🧩 ESTRUTURA ORGANIZACIONAL -->
+  <div class="section-block">
+    <div class="section-title">🧩 Estrutura Organizacional</div>
+    <div class="section-desc">Resumo da equipe registrada no sistema.</div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-title">Total de Funcionários</div>
+        <div class="info-value">12</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Caixas Ativos</div>
+        <div class="info-value">4</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Motoboys Cadastrados</div>
+        <div class="info-value">3</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Gerentes / Líderes</div>
+        <div class="info-value">2</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LOGOUT -->
+<script>
+  document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+    localStorage.removeItem("financeApp_currentUser");
+    window.location.href = "../index.html";
+  });
+</script>
+
+</body>
+</html>
