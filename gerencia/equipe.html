@@ -1,173 +1,279 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Equipe – Painel da Gerência</title>
 
-  <link rel="stylesheet" href="../css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    body {
-      background: #f5f7fb;
-      margin: 0;
-      font-family: "Inter", sans-serif;
+    :root {
+      --sidebar-width: 230px;
     }
 
-    /* TOPBAR */
-    .topbar {
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      font-family: "Inter", sans-serif;
+      color: #111827;
+    }
+
+    /* ================= TOPBAR ================= */
+
+    .topbar-gerencia {
+      position: sticky;
+      top: 0;
+      z-index: 40;
       background: white;
-      padding: 16px 22px;
       border-bottom: 1px solid #e5e7eb;
+      padding: 10px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-menu-toggle {
+      display: none;
+      border: none;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
     .topbar-title {
-      font-size: 1.35rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      color: #111827;
     }
 
     #btnLogoutHeader {
       background: #fee2e2;
       border: 1px solid #fecaca;
       color: #b91c1c;
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 6px 12px;
+      border-radius: 10px;
       cursor: pointer;
-      font-weight: 600;
-      transition: .2s;
-    }
-
-    #btnLogoutHeader:hover { background: #fecaca; }
-
-    /* MENU LATERAL */
-    .sidebar {
-      width: 240px;
-      background: white;
-      border-right: 1px solid #e5e7eb;
-      height: 100vh;
-      position: fixed;
-      top: 64px;
-      left: 0;
-      padding-top: 20px;
-    }
-
-    .menu-btn {
-      width: 100%;
-      padding: 14px 22px;
-      font-size: 0.95rem;
-      border: none;
-      background: none;
-      text-align: left;
-      cursor: pointer;
-      color: #374151;
       font-weight: 600;
       transition: 0.2s;
     }
 
-    .menu-btn:hover { background: #f3f4f6; }
-    .menu-btn.active { background: #e0e7ff; color: #4338ca; }
+    /* ================= SIDEBAR ================= */
 
-    /* CONTEÚDO */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      z-index: 30;
+    }
+
+    .sidebar-gerencia {
+      width: var(--sidebar-width);
+      background: white;
+      border-right: 1px solid #e5e7eb;
+      padding: 16px 10px;
+      box-sizing: border-box;
+      height: calc(100vh - 54px);
+    }
+
+    .sidebar-close {
+      display: none;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: none;
+      background: #f3f4f6;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #374151;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .sidebar-link:hover {
+      background: #f3f4f6;
+    }
+
+    .sidebar-link.active {
+      background: #eef2ff;
+      color: #4f46e5;
+      font-weight: 600;
+    }
+
+    /* ================= CONTEÚDO ================= */
+
     .content {
-      margin-left: 260px;
-      padding: 22px;
+      flex: 1;
+      padding: 18px;
+      margin-left: var(--sidebar-width);
     }
 
     .section-title {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: #111827;
       margin-bottom: 18px;
     }
 
-    /* GRID DE FUNCIONÁRIOS */
+    /* GRID DOS FUNCIONÁRIOS */
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
     }
 
     .team-card {
       background: white;
-      padding: 18px;
       border-radius: 14px;
+      padding: 16px;
       border: 1px solid #e5e7eb;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
       transition: 0.2s;
+      cursor: pointer;
     }
 
-    .team-card:hover { transform: translateY(-3px); }
+    .team-card:hover {
+      transform: translateY(-3px);
+    }
 
     .team-name {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
-      color: #111827;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .team-role {
       font-size: 0.85rem;
+      margin-bottom: 10px;
       color: #6b7280;
-      margin-bottom: 14px;
     }
 
     .team-stats {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #374151;
-      line-height: 1.4rem;
+      line-height: 1.3rem;
     }
 
-    .status-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: #22c55e;
-      border-radius: 50%;
-      margin-right: 6px;
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 768px) {
+      .btn-menu-toggle {
+        display: inline-flex;
+      }
+
+      .sidebar-gerencia {
+        position: fixed;
+        top: 54px;
+        left: -260px;
+        height: calc(100vh - 54px);
+        z-index: 40;
+        transition: left 0.22s ease;
+        box-shadow: 6px 0 16px rgba(15, 23, 42, 0.3);
+      }
+
+      .sidebar-gerencia.open {
+        left: 0;
+      }
+
+      .sidebar-overlay.show {
+        display: block;
+      }
+
+      .sidebar-close {
+        display: inline-block;
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 16px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- TOPO -->
-  <header class="topbar">
-    <div class="topbar-title">Gerência — Equipe</div>
+  <!-- TOPBAR -->
+  <header class="topbar-gerencia">
+    <div class="topbar-left">
+      <button class="btn-menu-toggle" id="btnMenuToggle">☰ Menu</button>
+      <div class="topbar-title">Equipe – Gerência</div>
+    </div>
+
     <button id="btnLogoutHeader">Sair</button>
   </header>
 
-  <!-- MENU LATERAL -->
-  <aside class="sidebar">
-    <button class="menu-btn" onclick="location.href='index.html'">📊 Dashboard</button>
-    <button class="menu-btn active">👥 Equipe</button>
-    <button class="menu-btn" onclick="location.href='financeiro.html'">💸 Financeiro</button>
-    <button class="menu-btn" onclick="location.href='agenda.html'">📅 Agenda</button>
-    <button class="menu-btn" onclick="location.href='logs.html'">📝 Logs</button>
-    <button class="menu-btn" onclick="location.href='relatorios.html'">📁 Relatórios</button>
-    <button class="menu-btn" onclick="location.href='dados.html'">🔓 Dados</button>
-    <button class="menu-btn" onclick="location.href='configuracoes.html'">⚙️ Configurações</button>
-  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- CONTEÚDO -->
-  <main class="content">
+  <div class="layout-gerencia">
 
-    <h2 class="section-title">Equipe Ativa</h2>
+    <!-- SIDEBAR -->
+    <aside class="sidebar-gerencia" id="sidebarGerencia">
+      <button class="sidebar-close" id="btnSidebarClose">✕ Fechar</button>
 
-    <div class="team-grid" id="teamContainer">
-      <!-- JS vai preencher os funcionários -->
-    </div>
+      <a href="gerencia.html" class="sidebar-link"><span>📊</span>Dashboard</a>
+      <a href="equipe.html" class="sidebar-link active"><span>👥</span>Equipe</a>
+      <a href="financeiro.html" class="sidebar-link"><span>💸</span>Financeiro</a>
+      <a href="agenda.html" class="sidebar-link"><span>📅</span>Agenda</a>
+      <a href="logs.html" class="sidebar-link"><span>📝</span>Logs</a>
+      <a href="relatorios.html" class="sidebar-link"><span>📁</span>Relatórios</a>
+      <a href="dados.html" class="sidebar-link"><span>🔒</span>Dados</a>
+      <a href="configuracoes.html" class="sidebar-link"><span>⚙️</span>Configurações</a>
+    </aside>
 
-  </main>
+    <!-- CONTEÚDO -->
+    <main class="content">
+      <h2 class="section-title">Equipe Ativa</h2>
+
+      <div class="team-grid" id="teamContainer">
+        <!-- JS vai preencher automaticamente -->
+      </div>
+    </main>
+
+  </div>
 
   <script src="../js/equipe.js"></script>
 
-  <!-- LOGOUT -->
+  <!-- SCRIPT MENU MOBILE -->
   <script>
+    const sidebar = document.getElementById("sidebarGerencia");
+    const overlay = document.getElementById("sidebarOverlay");
+    const btnMenuToggle = document.getElementById("btnMenuToggle");
+    const btnClose = document.getElementById("btnSidebarClose");
+
+    function openSidebar() {
+      sidebar.classList.add("open");
+      overlay.classList.add("show");
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("show");
+    }
+
+    btnMenuToggle.addEventListener("click", openSidebar);
+    btnClose.addEventListener("click", closeSidebar);
+    overlay.addEventListener("click", closeSidebar);
+
+    // Logout
     document.getElementById("btnLogoutHeader").addEventListener("click", () => {
       localStorage.removeItem("financeApp_currentUser");
       window.location.href = "../index.html";
