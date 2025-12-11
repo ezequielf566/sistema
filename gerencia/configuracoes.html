@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurações — Painel da Gerência</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background: #f5f7fb;
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .topbar {
+    background: white;
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .topbar-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  #btnLogoutHeader {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  #btnLogoutHeader:hover {
+    background: #fecaca;
+  }
+
+  .wrapper {
+    padding: 20px;
+  }
+
+  .section-block {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 7px rgba(0,0,0,0.05);
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 6px;
+  }
+
+  .section-desc {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+
+  /* TOKEN */
+  .token-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+
+  .btn-save {
+    padding: 12px 18px;
+    background: #3b82f6;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-save:hover {
+    background: #2563eb;
+  }
+
+  /* HISTÓRICO */
+  .history-item {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+
+  .history-date {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+
+  .history-text {
+    font-size: 0.9rem;
+    color: #374151;
+  }
+
+</style>
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-title">Configurações</div>
+  <button id="btnLogoutHeader">Sair</button>
+</header>
+
+<main class="wrapper">
+
+  <!-- ALTERAR TOKEN MASTER -->
+  <div class="section-block">
+    <div class="section-title">🔐 Alterar Token Master</div>
+    <div class="section-desc">Defina o token utilizado na criação de novos usuários no login.</div>
+
+    <input id="novoToken" type="text" class="token-input" placeholder="Digite o novo token...">
+
+    <button class="btn-save" id="btnSalvarToken">Salvar Token</button>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div class="section-block">
+    <div class="section-title">🧾 Histórico de Configurações</div>
+    <div class="section-desc">Últimas alterações realizadas no painel de configurações.</div>
+
+    <!-- APENAS VISUAL, SEM JS AINDA -->
+    <div class="history-item">
+      <div class="history-date">12/03/2025 - 14:21</div>
+      <div class="history-text">Token master alterado (Gerente).</div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-date">10/03/2025 - 10:05</div>
+      <div class="history-text">Configurações revisadas.</div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-date">05/03/2025 - 17:40</div>
+      <div class="history-text">Acesso ao painel registrado.</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LOGOUT -->
+<script>
+  document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+    localStorage.removeItem("financeApp_currentUser");
+    window.location.href = "../index.html";
+  });
+</script>
+
+</body>
+</html>
