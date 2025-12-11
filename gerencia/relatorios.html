@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatórios — Painel da Gerência</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background: #f5f7fb;
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .topbar {
+    background: white;
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .topbar-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  #btnLogoutHeader {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  #btnLogoutHeader:hover {
+    background: #fecaca;
+  }
+
+  /* Container */
+  .wrapper {
+    padding: 18px;
+  }
+
+  .section-block {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 7px rgba(0,0,0,0.05);
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 10px;
+  }
+
+  .section-desc {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+  }
+
+  /* Cards internos */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  .report-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px;
+    transition: 0.2s ease;
+    cursor: pointer;
+  }
+
+  .report-card:hover {
+    background: #f3f4f6;
+  }
+
+  .report-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .report-desc {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 6px;
+  }
+
+</style>
+</head>
+
+<body>
+
+<!-- Topo -->
+<header class="topbar">
+  <div class="topbar-title">Relatórios</div>
+  <button id="btnLogoutHeader">Sair</button>
+</header>
+
+<main class="wrapper">
+
+  <!-- 📄 CONTRATOS -->
+  <div class="section-block">
+    <div class="section-title">📄 Relatórios de Contratos</div>
+    <div class="section-desc">Visualize e exporte contratos gerados com filtros avançados.</div>
+
+    <div class="card-grid">
+      <div class="report-card">
+        <div class="report-title">Contratos Gerados</div>
+        <div class="report-desc">Listagem completa com filtros por data, cidade e funcionário.</div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-title">Contratos Concluídos</div>
+        <div class="report-desc">Todos os empréstimos já finalizados e liberados.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 💰 FINANCEIRO -->
+  <div class="section-block">
+    <div class="section-title">💰 Relatórios Financeiros</div>
+    <div class="section-desc">Entrada de parcelas pagas, saídas liberadas e balanço geral.</div>
+
+    <div class="card-grid">
+      <div class="report-card">
+        <div class="report-title">Entradas (Parcelas Pagas)</div>
+        <div class="report-desc">Resumo financeiro das entradas, por período e cidade.</div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-title">Saídas (Empréstimos Liberados)</div>
+        <div class="report-desc">Valores liberados, filtrados por funcionário ou data.</div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-title">Balanço Financeiro</div>
+        <div class="report-desc">Comparação entre entradas e saídas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 👥 CLIENTES -->
+  <div class="section-block">
+    <div class="section-title">👥 Relatórios de Clientes</div>
+    <div class="section-desc">Histórico completo, status de contratos e inadimplências.</div>
+
+    <div class="card-grid">
+      <div class="report-card">
+        <div class="report-title">Histórico do Cliente</div>
+        <div class="report-desc">Todos os contratos, pagamentos e situação atual.</div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-title">Status dos Clientes</div>
+        <div class="report-desc">Em andamento, próximos do vencimento, concluídos e atrasados.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🚚 MOTOBOYS -->
+  <div class="section-block">
+    <div class="section-title">🚚 Relatórios de Motoboys</div>
+    <div class="section-desc">Monitoramento de entregas, produtividade e desempenho.</div>
+
+    <div class="card-grid">
+      <div class="report-card">
+        <div class="report-title">Entregas Realizadas</div>
+        <div class="report-desc">Todos os contratos entregues por cada motoboy.</div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-title">Desempenho e Produtividade</div>
+        <div class="report-desc">Eficiência, frequência e tempo de resposta.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🧑‍💼 EQUIPE -->
+  <div class="section-block">
+    <div class="section-title">🧑‍💼 Relatórios da Equipe</div>
+    <div class="section-desc">Avaliação de desempenho dos funcionários em todos os módulos.</div>
+
+    <div class="card-grid">
+      <div class="report-card">
+        <div class="report-title">Produtividade Individual</div>
+        <div class="report-desc">Contratos criados, pagamentos validados e uso do sistema.</div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-title">Comparativo entre Funcionários</div>
+        <div class="report-desc">Ranking detalhado da equipe.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📝 LOGS -->
+  <div class="section-block">
+    <div class="section-title">📝 Relatórios de Logs</div>
+    <div class="section-desc">Auditoria completa de tudo que acontece no sistema.</div>
+
+    <div class="card-grid">
+      <div class="report-card">
+        <div class="report-title">Registro de Atividades</div>
+        <div class="report-desc">Quem fez o quê, quando e em qual painel.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📊 INTELIGENTE -->
+  <div class="section-block">
+    <div class="section-title">📊 Relatório Inteligente (Visão 360º)</div>
+    <div class="section-desc">Resumo completo do desempenho do sistema.</div>
+
+    <div class="card-grid">
+      <div class="report-card">
+        <div class="report-title">Resumo Geral</div>
+        <div class="report-desc">Entradas, saídas, pagamentos e atrasos — tudo em um único PDF.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LOGOUT -->
+<script>
+  document.getElementById("btnLogoutHeader").addEventListener("click", () => {
+    localStorage.removeItem("financeApp_currentUser");
+    window.location.href = "../index.html";
+  });
+</script>
+
+</body>
+</html>
