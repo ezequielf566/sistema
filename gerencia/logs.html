@@ -1,221 +1,289 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Logs do Sistema • Gerência</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logs – Painel da Gerência</title>
 
-  <link rel="stylesheet" href="../css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
+    :root {
+      --sidebar-width: 230px;
+    }
+
     body {
       margin: 0;
       background: #f5f7fb;
       font-family: "Inter", sans-serif;
-      display: flex;
     }
 
-    /* Sidebar */
-    .sidebar {
-      width: 240px;
-      background: #ffffff;
-      border-right: 1px solid #e5e7eb;
-      padding: 20px 0;
-      height: 100vh;
-      position: fixed;
-      left: 0;
+    /* ======================== TOPBAR ======================== */
+
+    .topbar-gerencia {
+      position: sticky;
       top: 0;
-    }
-
-    .sidebar h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 20px;
-      color: #111827;
-    }
-
-    .sidebar-menu {
+      z-index: 40;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px 16px;
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 0 14px;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .sidebar-item {
-      padding: 12px 16px;
-      border-radius: 8px;
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-menu-toggle {
+      display: none;
+      border: none;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 8px 10px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
-      color: #374151;
-      transition: 0.2s;
-      background: #f9fafb;
     }
 
-    .sidebar-item:hover {
-      background: #e5e7eb;
-    }
-
-    .sidebar-item.active {
-      background: #3b82f6;
-      color: white;
-    }
-
-    /* Conteúdo */
-    .content {
-      margin-left: 240px;
-      padding: 30px;
-      width: calc(100% - 240px);
-    }
-
-    .content-title {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    .content-subtitle {
-      font-size: 1rem;
-      color: #6b7280;
-      margin-top: 4px;
-      margin-bottom: 22px;
-    }
-
-    /* Filtros */
-    .filters-box {
-      background: white;
-      padding: 16px;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
-    }
-
-    .filters-row {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .filter-item {
-      flex: 1;
-      min-width: 180px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .filter-item label {
-      font-size: 0.85rem;
+    #btnLogoutHeader {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 6px 12px;
+      border-radius: 10px;
+      cursor: pointer;
       font-weight: 600;
     }
 
-    .filter-item input, select {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
-      font-size: 0.9rem;
+    /* ======================== SIDEBAR ======================== */
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      z-index: 30;
     }
 
-    /* Tabela */
-    .logs-table {
-      width: 100%;
+    .sidebar-gerencia {
+      width: var(--sidebar-width);
       background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      border-collapse: collapse;
+      border-right: 1px solid #e5e7eb;
+      padding: 16px 10px;
+      height: calc(100vh - 54px);
+      box-sizing: border-box;
     }
 
-    .logs-table thead {
+    .sidebar-close {
+      display: none;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: none;
+      background: #f3f4f6;
+      cursor: pointer;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #374151;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .sidebar-link:hover {
       background: #f3f4f6;
     }
 
-    .logs-table th, .logs-table td {
-      padding: 14px;
-      text-align: left;
-      border-bottom: 1px solid #e5e7eb;
+    .sidebar-link.active {
+      background: #eef2ff;
+      color: #4f46e5;
+      font-weight: 600;
+    }
+
+    /* ======================== CONTEÚDO ======================== */
+
+    .content {
+      padding: 18px;
+      margin-left: var(--sidebar-width);
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .section-subtitle {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    /* ======================== FILTROS ======================== */
+
+    .filters-box {
+      background: white;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 20px;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .filters-box input,
+    .filters-box select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
       font-size: 0.9rem;
     }
 
-    .logs-table th {
-      font-weight: 700;
+    .filters-box label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* ======================== TABELA ======================== */
+
+    table {
+      width: 100%;
+      background: white;
+      border-radius: 14px;
+      border-collapse: collapse;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #e5e7eb;
       color: #374151;
+      text-align: left;
     }
 
-    .logs-table tbody td {
-      color: #4b5563;
+    th {
+      background: #f3f4f6;
+      font-weight: 700;
     }
 
-    .log-empty {
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-row {
       text-align: center;
       padding: 20px;
-      color: #6b7280;
       font-size: 1rem;
+      color: #6b7280;
     }
 
-    /* Botão Sair */
-    #btnLogout {
-      margin-top: 30px;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      background: #fee2e2;
-      color: #b91c1c;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+    /* ======================== MOBILE ======================== */
 
-    #btnLogout:hover {
-      background: #fecaca;
+    @media (max-width: 768px) {
+      .btn-menu-toggle {
+        display: inline-flex;
+      }
+
+      .sidebar-gerencia {
+        position: fixed;
+        top: 54px;
+        left: -260px;
+        height: calc(100vh - 54px);
+        z-index: 40;
+        transition: left 0.22s ease;
+      }
+
+      .sidebar-gerencia.open {
+        left: 0;
+      }
+
+      .sidebar-overlay.show {
+        display: block;
+      }
+
+      .sidebar-close {
+        display: inline-block;
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 14px;
+      }
     }
   </style>
+
 </head>
 
 <body>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <h2>Gerência</h2>
-
-    <div class="sidebar-menu">
-      <div class="sidebar-item" onclick="window.location.href='index.html'">📊 Dashboard</div>
-      <div class="sidebar-item" onclick="window.location.href='equipe.html'">👥 Equipe</div>
-      <div class="sidebar-item" onclick="window.location.href='financeiro.html'">💸 Financeiro</div>
-      <div class="sidebar-item" onclick="window.location.href='agenda.html'">📅 Agenda</div>
-      <div class="sidebar-item active">📝 Logs</div>
-      <div class="sidebar-item" onclick="window.location.href='relatorios.html'">📁 Relatórios</div>
-      <div class="sidebar-item" onclick="window.location.href='dados.html'">🔓 Dados</div>
-      <div class="sidebar-item" onclick="window.location.href='configuracoes.html'">⚙️ Configurações</div>
+  <!-- TOPBAR -->
+  <header class="topbar-gerencia">
+    <div class="topbar-left">
+      <button class="btn-menu-toggle" id="btnMenuToggle">☰ Menu</button>
+      <div class="topbar-title">Gerência — Logs</div>
     </div>
+    <button id="btnLogoutHeader">Sair</button>
+  </header>
 
-    <button id="btnLogout">Sair</button>
+  <!-- OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar-gerencia" id="sidebarGerencia">
+    <button class="sidebar-close" id="btnSidebarClose">✖ Fechar</button>
+
+    <a href="gerencia.html" class="sidebar-link">📊 Dashboard</a>
+    <a href="equipe.html" class="sidebar-link">👥 Equipe</a>
+    <a href="financeiro.html" class="sidebar-link">💸 Financeiro</a>
+    <a href="agenda.html" class="sidebar-link">📅 Agenda</a>
+    <a href="logs.html" class="sidebar-link active">📝 Logs</a>
+    <a href="relatorios.html" class="sidebar-link">📁 Relatórios</a>
+    <a href="dados.html" class="sidebar-link">🔓 Dados</a>
+    <a href="configuracoes.html" class="sidebar-link">⚙️ Configurações</a>
   </aside>
 
   <!-- CONTEÚDO -->
   <main class="content">
 
-    <h1 class="content-title">Histórico de Atividades</h1>
-    <p class="content-subtitle">Monitoramento completo de ações registradas no sistema.</p>
+    <h2 class="section-title">Histórico do Sistema</h2>
+    <p class="section-subtitle">Acompanhe todas as ações realizadas pelos usuários.</p>
 
     <!-- FILTROS -->
     <div class="filters-box">
-      <div class="filters-row">
+      <div class="filters-grid">
 
-        <div class="filter-item">
+        <div>
           <label>Data</label>
-          <input type="date" id="filtroData">
+          <input type="date" id="filtroData" />
         </div>
 
-        <div class="filter-item">
+        <div>
           <label>Usuário</label>
-          <input type="text" id="filtroUsuario" placeholder="Nome do usuário">
+          <input type="text" id="filtroUsuario" placeholder="Nome do usuário" />
         </div>
 
-        <div class="filter-item">
+        <div>
           <label>Categoria</label>
           <select id="filtroCategoria">
             <option value="">Todas</option>
@@ -225,16 +293,16 @@
           </select>
         </div>
 
-        <div class="filter-item">
+        <div>
           <label>Ação</label>
-          <input type="text" id="filtroAcao" placeholder="Ex: contrato criado">
+          <input type="text" id="filtroAcao" placeholder="Ex: contrato criado" />
         </div>
 
       </div>
     </div>
 
     <!-- TABELA -->
-    <table class="logs-table">
+    <table>
       <thead>
         <tr>
           <th>Data / Hora</th>
@@ -244,21 +312,30 @@
           <th>Detalhes</th>
         </tr>
       </thead>
-
       <tbody id="logsTabela">
-        <tr>
-          <td colspan="5" class="log-empty">Nenhum registro encontrado.</td>
-        </tr>
+        <tr><td colspan="5" class="empty-row">Nenhum registro encontrado.</td></tr>
       </tbody>
     </table>
 
   </main>
 
+  <!-- JS -->
+  <script src="../js/logs.js"></script>
+
   <script>
-    document.getElementById("btnLogout").addEventListener("click", () => {
+    const sidebar = document.getElementById("sidebarGerencia");
+    const overlay = document.getElementById("sidebarOverlay");
+    const btnMenu = document.getElementById("btnMenuToggle");
+    const btnClose = document.getElementById("btnSidebarClose");
+
+    btnMenu.onclick = () => { sidebar.classList.add("open"); overlay.classList.add("show"); };
+    btnClose.onclick = () => { sidebar.classList.remove("open"); overlay.classList.remove("show"); };
+    overlay.onclick = () => { sidebar.classList.remove("open"); overlay.classList.remove("show"); };
+
+    document.getElementById("btnLogoutHeader").onclick = () => {
       localStorage.removeItem("financeApp_currentUser");
       window.location.href = "../index.html";
-    });
+    };
   </script>
 
 </body>
